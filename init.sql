@@ -135,3 +135,8 @@ INSERT INTO "Note_Song" VALUES
 INSERT INTO "Effect" VALUES 
 (1, 'Strength', 10, 0, 10, 0),
 (2, 'Wheel of fortune', 10, 1, 0, 10);
+
+INSERT INTO "User" VALUES
+(1, "Vasaya", FALSE, 1000),
+(2, "Joshua", TRUE, 1000),
+(3, "Michael", TRUE, 1000);
