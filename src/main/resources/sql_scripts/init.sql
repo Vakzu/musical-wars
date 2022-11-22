@@ -86,3 +86,12 @@ CREATE TABLE "Fight_Participant"
     "experience_gained" integer NOT NULL,
     "gold_gained"       integer NOT NULL
 );
+
+CREATE TABLE "Fight_Moves" (
+    "move_number" integer NOT NULL,
+    "fight_id" integer NOT NULL REFERENCES "Fight" ("id"),
+    "attacker_id" integer NOT NULL REFERENCES "Fight_Participant" ("id"),
+    "victim_id" integer NOT NULL REFERENCES "Fight_Participant" ("id"),
+    "damage" integer NOT NULL,
+    PRIMARY KEY ("move_number", "fight_id")
+)
