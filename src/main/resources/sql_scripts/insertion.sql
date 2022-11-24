@@ -62,20 +62,16 @@ VALUES (1, 1, 10),
        (7, 4, 21),
        (7, 8, 17);
 
-INSERT INTO "EffectType" ("name")
-VALUES ('STAMINA'),
-       ('LUCK'),
-       ('STRENGTH');
+INSERT INTO "Effect" ("id", "name", "price", "stamina", "strength", "luck", "constitution")
+VALUES (1, 'Death 13', 50, 0, 4, 0, 1),
+       (2, 'Sticky fingers', 70, 4, 0, 1, 1),
+       (3, 'Lucky bastard', 65, 1, 0, 5, 0);
 
-INSERT INTO "Multi_Effect" ("id", "name", "price")
-VALUES (1, 'Death 13', 50),
-       (2, 'Eye catcher', 40),
-       (3, 'Lucky bastard', 60);
+INSERT INTO "User" ("id", "name", "is_online", "password")
+VALUES (1, 'Petya', true, 'qwety134'),
+       (2, 'Nastya', true, 'aboba2000');
 
-INSERT INTO "Multieffect_Map" (multieffect_id, effect_type, effect_val)
-VALUES (1, 'STRENGTH', 5),
-       (2, 'STAMINA', 3),
-       (2, 'LUCK', 1),
-       (3, 'LUCK', 5),
-       (3, 'STRENGTH', -2),
-       (3, 'STAMINA', 1);
+INSERT INTO "Character" ("id", "experience", "hero_id", "user_id")
+VALUES (1, 0, 6, 1),
+       (2, 5, 3, 1),
+       (3, 60, 7, 2);
