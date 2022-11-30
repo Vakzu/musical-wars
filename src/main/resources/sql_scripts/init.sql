@@ -1,10 +1,10 @@
-CREATE TABLE "Location"
+CREATE TABLE location
 (
     "id"   serial PRIMARY KEY,
     "name" varchar(50) NOT NULL
 );
 
-CREATE TABLE "Hero"
+CREATE TABLE hero
 (
     "id"     serial PRIMARY KEY,
     "name"   varchar(50) NOT NULL,
@@ -12,29 +12,29 @@ CREATE TABLE "Hero"
     "health" integer     NOT NULL CHECK ("health" > 0)
 );
 
-CREATE TABLE "Song"
+CREATE TABLE song
 (
     "id"               serial PRIMARY KEY,
     "name"             varchar(50) NOT NULL,
     "experience_level" integer     NOT NULL CHECK ("experience_level" >= 0),
-    "hero_id"          integer     NOT NULL REFERENCES "Hero" ("id") ON DELETE CASCADE
+    "hero_id"          integer     NOT NULL REFERENCES "hero" ("id") ON DELETE CASCADE
 );
 
-CREATE TABLE "Note"
+CREATE TABLE note
 (
     "id"     serial PRIMARY KEY,
     "name"   varchar(10) NOT NULL,
     "damage" integer     NOT NULL CHECK ("damage" >= 0)
 );
 
-CREATE TABLE "Note_Song"
+CREATE TABLE note_song
 (
-    "note_id" integer NOT NULL REFERENCES "Note" ("id") ON DELETE CASCADE,
-    "song_id" integer NOT NULL REFERENCES "Song" ("id") ON DELETE CASCADE,
+    "note_id" integer NOT NULL REFERENCES "note" ("id") ON DELETE CASCADE,
+    "song_id" integer NOT NULL REFERENCES "song" ("id") ON DELETE CASCADE,
     "amount"  integer NOT NULL
 );
 
-CREATE TABLE "User"
+CREATE TABLE "user"
 (
     "id"        serial PRIMARY KEY,
     "name"      varchar(50)  NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE "User"
     "password"  varchar(255) NOT NULL
 );
 
-CREATE TABLE "Effect"
+CREATE TABLE "effect"
 (
     "id"    serial PRIMARY KEY,
     "name"  varchar(50),
@@ -54,38 +54,38 @@ CREATE TABLE "Effect"
     "constitution" integer NOT NULL CHECK("constitution" >= 0)
 );
 
-CREATE TABLE "Character"
+CREATE TABLE "character"
 (
     "id"         serial PRIMARY KEY,
     "experience" integer NOT NULL CHECK ("experience" >= 0),
-    "hero_id"    integer NOT NULL REFERENCES "Hero" ("id") ON DELETE CASCADE,
-    "user_id"    integer NOT NULL REFERENCES "User" ("id") ON DELETE CASCADE
+    "hero_id"    integer NOT NULL REFERENCES "hero" ("id") ON DELETE CASCADE,
+    "user_id"    integer NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE
 );
 
-CREATE TABLE "Fight"
+CREATE TABLE "fight"
 (
     "id"          serial PRIMARY KEY,
     "start"       timestamp with time zone NOT NULL,
-    "location_id" integer REFERENCES "Location" ("id") ON DELETE SET NULL
+    "location_id" integer REFERENCES "location" ("id") ON DELETE SET NULL
 );
 
-CREATE TABLE "Fight_Participant"
+CREATE TABLE "fight_participant"
 (
     "id"                serial PRIMARY KEY,
-    "fight_id"          integer NOT NULL REFERENCES "Fight" ("id") ON DELETE CASCADE,
-    "effect_id"         integer NOT NULL REFERENCES "Effect" ("id") ON DELETE SET NULL,
-    "song_id"           integer NOT NULL REFERENCES "Song" ("id") ON DELETE SET NULL,
-    "character_id"      integer NOT NULL REFERENCES "Character" ("id") ON DELETE CASCADE,
+    "fight_id"          integer NOT NULL REFERENCES "fight" ("id") ON DELETE CASCADE,
+    "effect_id"         integer NOT NULL REFERENCES "effect" ("id") ON DELETE SET NULL,
+    "song_id"           integer NOT NULL REFERENCES "song" ("id") ON DELETE SET NULL,
+    "character_id"      integer NOT NULL REFERENCES "character" ("id") ON DELETE CASCADE,
     "experience_gained" integer NOT NULL,
     "gold_gained"       integer NOT NULL,
     "position"          integer NOT NULL
 );
 
-CREATE TABLE "Fight_Moves" (
+CREATE TABLE "fight_moves" (
     "move_number" integer NOT NULL,
-    "fight_id" integer NOT NULL REFERENCES "Fight" ("id"),
-    "attacker_id" integer NOT NULL REFERENCES "Fight_Participant" ("id"),
-    "victim_id" integer REFERENCES "Fight_Participant" ("id"),
+    "fight_id" integer NOT NULL REFERENCES "fight" ("id"),
+    "attacker_id" integer NOT NULL REFERENCES "fight_participant" ("id"),
+    "victim_id" integer REFERENCES "fight_participant" ("id"),
     "damage" integer NOT NULL,
     PRIMARY KEY ("move_number", "fight_id")
 )

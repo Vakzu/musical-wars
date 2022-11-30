@@ -1,42 +1,42 @@
-INSERT INTO "Location" ("id", "name")
-VALUES (1, 'Vienna'),
-       (2, 'Amsterdam'),
-       (3, 'Milan'),
-       (4, 'Tokyo'),
-       (5, 'Paris'),
-       (6, 'Salzburg'),
-       (7, 'Moscow');
+INSERT INTO "location" ("name")
+VALUES ('Vienna'),
+       ('Amsterdam'),
+       ('Milan'),
+       ('Tokyo'),
+       ('Paris'),
+       ('Salzburg'),
+       ('Moscow');
 
-INSERT INTO "Hero" ("id", "name", "price", "health")
-VALUES (1, 'Wolfgang Amadeus Mozart', 300, 100),
-       (2, 'Ludwig van Beethoven', 400, 125),
-       (3, 'Johann Sebastian Bach', 500, 150),
-       (4, 'Pyotr Ilyich Tchaikovsky', 600, 170),
-       (5, 'Frederic Chopin', 700, 200),
-       (6, 'Dora', 10000, 999999),
-       (7, 'Samuel Kim', 10, 200); -- jojo no music author
+INSERT INTO "hero" ("name", "price", "health")
+VALUES ('Wolfgang Amadeus Mozart', 300, 100),
+       ('Ludwig van Beethoven', 400, 125),
+       ('Johann Sebastian Bach', 500, 150),
+       ('Pyotr Ilyich Tchaikovsky', 600, 170),
+       ('Frederic Chopin', 700, 200),
+       ('Dora', 10000, 999999),
+       ('Samuel Kim', 10, 200); -- jojo no music author
 
-INSERT INTO "Note" ("id", "name", "damage")
-VALUES (1, 'A', 10),
-       (2, 'B', 11),
-       (3, 'C', 11),
-       (4, 'D', 12),
-       (5, 'E', 12),
-       (6, 'F', 13),
-       (7, 'G', 13);
+INSERT INTO "note" ("id", "name", "damage")
+VALUES ('A', 10),
+       ('B', 11),
+       ('C', 11),
+       ('D', 12),
+       ('E', 12),
+       ('F', 13),
+       ('G', 13);
 
-INSERT INTO "Song" ("id", "name", "experience_level", "hero_id")
-VALUES (1, 'Ballade No. 1 in G minor Op. 23', 100, 5),
-       (2, 'Moon Sonata', 76, 2),
-       (3, 'Toccata and Fugue', 96, 3),
-       (4, 'Requiem', 83, 1),
-       (5, 'Swan Lake', 65, 4),
-       (6, 'Dorafool', 0, 6),
-       (7, 'Fell In Love', 0, 6),
-       (8, 'Pink hair', 10, 6),
-       (9, 'Pillar Men Theme', 0, 7);
+INSERT INTO "song" ("name", "experience_level", "hero_id")
+VALUES ('Ballade No. 1 in G minor Op. 23', 100, 5),
+       ('Moon Sonata', 76, 2),
+       ('Toccata and Fugue', 96, 3),
+       ('Requiem', 83, 1),
+       ('Swan Lake', 65, 4),
+       ('Dorafool', 0, 6),
+       ('Fell In Love', 0, 6),
+       ('Pink hair', 10, 6),
+       ('Pillar Men Theme', 0, 7);
 
-INSERT INTO "Note_Song" ("note_id", "song_id", "amount")
+INSERT INTO "note_song" ("note_id", "song_id", "amount")
 VALUES (1, 1, 10),
        (1, 2, 12),
        (1, 4, 23),
@@ -62,16 +62,16 @@ VALUES (1, 1, 10),
        (7, 4, 21),
        (7, 8, 17);
 
-INSERT INTO "Effect" ("id", "name", "price", "stamina", "strength", "luck", "constitution")
-VALUES (1, 'Death 13', 50, 0, 4, 0, 1),
-       (2, 'Sticky fingers', 70, 4, 0, 1, 1),
-       (3, 'Lucky bastard', 65, 1, 0, 5, 0);
+INSERT INTO "effect" ("name", "price", "stamina", "strength", "luck", "constitution")
+VALUES ('Death 13', 50, 0, 4, 0, 1),
+       ('Sticky fingers', 70, 4, 0, 1, 1),
+       ('Lucky bastard', 65, 1, 0, 5, 0);
 
-INSERT INTO "User" ("id", "name", "is_online", "password")
-VALUES (1, 'Petya', true, 'qwety134'),
-       (2, 'Nastya', true, 'aboba2000');
+INSERT INTO "user" ("name", "is_online", "password")
+VALUES ('Petya', true, 'qwety134'),
+       ('Nastya', true, 'aboba2000');
 
-INSERT INTO "Character" ("id", "experience", "hero_id", "user_id")
-VALUES (1, 0, 6, 1),
-       (2, 5, 3, 1),
-       (3, 60, 7, 2);
+INSERT INTO "character" ("experience", "hero_id", "user_id")
+VALUES (0, 6, 1),
+       (5, 3, 1),
+       (60, 7, 2);
