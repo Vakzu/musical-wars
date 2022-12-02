@@ -197,8 +197,6 @@
     </script>
 </head>
 <body onload="connect()">
-    <h1>Hello, ${user.name} You're gay!</h1>
-
     <div style="display: flex; justify-content: center">
         <div style="padding: 0.5em">
             <div id="online-users" style="background: grey; width: 10em; height: 20em; padding: 4px">
@@ -236,16 +234,39 @@
 
         <div style="padding: 0.5em; width: 20em">
             <div id="config-panel" style="background: grey; width: 100%; height: 20em; padding: 4px">
-                <div class="user-block" style="background: white">
+                <div id="effects-block" class="user-block" style="background: white; height: fit-content">
                     <div>
-                        <label for="x">Select hero:</label>
-                        <select name="x" id="x">
-                            <option>A</option>
-                            <option>B</option>
-                            <option>C</option>
+                        <label for="effect-select">Select hero:</label>
+                        <select id="effect-select">
+                            <#list effects as effect>
+                                <option value="${effect.id}">${effect.name}</option>
+                            </#list>
                         </select>
+                        <div>
+                            <div>Stamina: ${effects[0].stamina!}</div>
+                            <div>Constitution: ${effects[0].constitution!}</div>
+                            <div>Luck: ${effects[0].luck!}</div>
+                            <div>Strength: ${effects[0].strength!}</div>
+                            <div style="color: red"><b>Price: ${effects[0].price!}</b></div>
+                        </div>
+                        <div>
+                        </div>
                     </div>
                 </div>
+                <div class="user-block" style="background: white; height: fit-content">
+                    <div>
+                        <label for="hero-select">Select hero:</label>
+                        <select name="" id="hero-select">
+                            <#list heroes as hero>
+                                <option value="${hero.id}">${hero.heroName}</option>
+                            </#list>
+                        </select>
+                        <#if heroes?size gt 0>
+                            <div>Health: ${heroes[0].heroHealth}</div>
+                        </#if>
+                    </div>
+                </div>
+
                 <div class="user-block" style="background: white">
                     <div>
                         <label for="y">Select song:</label>

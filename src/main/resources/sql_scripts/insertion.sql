@@ -7,14 +7,14 @@ VALUES ('Vienna'),
        ('Salzburg'),
        ('Moscow');
 
-INSERT INTO "hero" ("name", "price", "health")
-VALUES ('Wolfgang Amadeus Mozart', 300, 100),
-       ('Ludwig van Beethoven', 400, 125),
-       ('Johann Sebastian Bach', 500, 150),
-       ('Pyotr Ilyich Tchaikovsky', 600, 170),
-       ('Frederic Chopin', 700, 200),
-       ('Dora', 10000, 999999),
-       ('Samuel Kim', 10, 200); -- jojo no music author
+INSERT INTO "hero" ("name", "price", "health", "img_path")
+VALUES ('Wolfgang Amadeus Mozart', 300, 100, 'mozart.jpg'),
+       ('Ludwig van Beethoven', 400, 125, 'bethoven.jpg'),
+       ('Johann Sebastian Bach', 500, 150, 'bah.jpg'),
+       ('Pyotr Ilyich Tchaikovsky', 600, 170, 'tchaikovsky.jpg'),
+       ('Frederic Chopin', 700, 200, 'chopin.jpg'),
+       ('Dora', 10000, 999999, 'dora.jpg'),
+       ('Samuel Kim', 10, 200, 'samuel.jpg'); -- jojo no music author
 
 INSERT INTO "note" ("name", "damage")
 VALUES ('A', 10),

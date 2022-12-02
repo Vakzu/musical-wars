@@ -9,7 +9,8 @@ CREATE TABLE hero
     "id"     serial PRIMARY KEY,
     "name"   varchar(50) NOT NULL,
     "price"  integer     NOT NULL CHECK ("price" >= 0),
-    "health" integer     NOT NULL CHECK ("health" > 0)
+    "health" integer     NOT NULL CHECK ("health" > 0),
+    "img_path" varchar(50)
 );
 
 CREATE TABLE song

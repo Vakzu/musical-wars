@@ -50,6 +50,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE function get_shop_info_for_user(requested_id int)
+    returns TABLE(hero_id integer, name character varying, price integer, health integer, img_path varchar, user_id int)
+as
+$$
+BEGIN
+    RETURN QUERY
+        SELECT hero.id, hero.name, hero.price, hero.health, hero.img_path, C.user_id
+        FROM hero
+                 LEFT JOIN (select * from character where character.user_id = requested_id) C ON C.hero_id = hero.id;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION get_characters_info_with_songs(characters integer[], songs integer[]) RETURNS SETOF participant_info AS
 $$
 DECLARE

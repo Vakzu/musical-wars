@@ -1,6 +1,7 @@
 package com.vakzu.musicwars.security
 
 import com.vakzu.musicwars.entities.User
+import com.vakzu.musicwars.exceptions.NotEnoughMoneyException
 import com.vakzu.musicwars.exceptions.UserAlreadyExistsException
 import com.vakzu.musicwars.repos.UserRepository
 import org.springframework.security.core.userdetails.UserDetails
@@ -39,4 +40,11 @@ class UserService(
         return MyUserPrincipal(existing)
     }
 
+    fun getShopUserInfo(id: Int) = userRepository.getUserShopInfo(id)
+
+    fun buyHero(userId: Int, heroId: Int): Boolean {
+        return userRepository.buyHero(userId, heroId)
+    }
+
+    fun findByName(username: String): User? = userRepository.findByName(username)
 }
