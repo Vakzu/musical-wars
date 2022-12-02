@@ -10,6 +10,8 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     database: postgresql
+    show-sql: true
 jwt:
   expiration-time: 86400
+
 

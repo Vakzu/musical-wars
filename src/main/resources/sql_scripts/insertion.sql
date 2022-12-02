@@ -16,7 +16,7 @@ VALUES ('Wolfgang Amadeus Mozart', 300, 100),
        ('Dora', 10000, 999999),
        ('Samuel Kim', 10, 200); -- jojo no music author
 
-INSERT INTO "note" ("id", "name", "damage")
+INSERT INTO "note" ("name", "damage")
 VALUES ('A', 10),
        ('B', 11),
        ('C', 11),
