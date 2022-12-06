@@ -48,14 +48,14 @@ DECLARE
     effect_price integer;
     dealId integer;
 BEGIN
-    SELECT price INTO effect_price FROM effect WHERE id = NEW.id;
+    SELECT price INTO effect_price FROM effect WHERE id = NEW.effect_id;
 
     INSERT INTO "deal" (user_id, price)
     VALUES (NEW.user_id, effect_price)
     RETURNING id INTO dealId;
 
     INSERT INTO "effect_deal" (effect_id, deal_id)
-    VALUES (NEW.id, dealId);
+    VALUES (NEW.effect_id, dealId);
 
     RETURN NEW;
 END;
