@@ -106,7 +106,26 @@
             </div>
         </div>
     </#list>
-
+</div>
+<div style="display: flex; justify-content: center">
+    <#list effects as effect>
+        <div id="effect-${effect.id}" class="card" style="width: 18rem;">
+            <img class="card-img-top" src="images/none.jpg" alt="${effect.name}">
+            <div class="card-body">
+                <h5 class="card-title">${effect.name}</h5>
+                <p class="card-text">
+                    Stamina: ${effect.stamina}<br>
+                    Strength: ${effect.strength}<br>
+                    Luck: ${effect.luck}<br>
+                    Constitution: ${effect.constitution}<br>
+                </p>
+                <p>
+                    Inventory: ${effect.amount}
+                </p>
+                <button type="button" onclick="alert('Bought')" class="btn btn-primary">${effect.price}</button>
+            </div>
+        </div>
+    </#list>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

@@ -17,22 +17,9 @@ CREATE TABLE song
 (
     "id"               serial PRIMARY KEY,
     "name"             varchar(50) NOT NULL,
+    "damage"           integer     NOT NULL CHECK ("damage" > 0),
     "experience_level" integer     NOT NULL CHECK ("experience_level" >= 0),
     "hero_id"          integer     NOT NULL REFERENCES "hero" ("id") ON DELETE CASCADE
-);
-
-CREATE TABLE note
-(
-    "id"     serial PRIMARY KEY,
-    "name"   varchar(10) NOT NULL,
-    "damage" integer     NOT NULL CHECK ("damage" >= 0)
-);
-
-CREATE TABLE note_song
-(
-    "note_id" integer NOT NULL REFERENCES "note" ("id") ON DELETE CASCADE,
-    "song_id" integer NOT NULL REFERENCES "song" ("id") ON DELETE CASCADE,
-    "amount"  integer NOT NULL
 );
 
 CREATE TABLE "user"
@@ -89,4 +76,27 @@ CREATE TABLE "fight_moves" (
     "victim_id" integer REFERENCES "fight_participant" ("id"),
     "damage" integer NOT NULL,
     PRIMARY KEY ("move_number", "fight_id")
-)
+);
+
+CREATE TABLE "deal" (
+    "id" serial PRIMARY KEY,
+    "user_id" integer NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE,
+    "price" integer NOT NULL
+);
+
+CREATE TABLE "hero_deal" (
+    "deal_id" integer NOT NULL REFERENCES "deal" ("id") ON DELETE CASCADE,
+    "hero_id" integer NOT NULL REFERENCES "hero" ("id") ON DELETE CASCADE
+);
+
+CREATE TABLE "effect_deal" (
+    "deal_id" integer NOT NULL REFERENCES "deal" ("id") ON DELETE CASCADE,
+    "effect_id" integer NOT NULL REFERENCES "effect" ("id") ON DELETE CASCADE
+);
+
+CREATE TABLE "inventory" (
+    "id" serial PRIMARY KEY,
+    "user_id" integer NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE,
+    "effect_id" integer NOT NULL REFERENCES "effect" ("id") ON DELETE CASCADE,
+    "amount" integer NOT NULL CHECK ("amount" >= 0)
+);

@@ -39,9 +39,11 @@ class MainViewController(
     fun mainPage(principal: Principal, model: Model): String {
         val user = userService.findByName(principal.name)!!
         val shop = userService.getShopUserInfo(user.id)
+        val effectShop = effectRepository.findEffectShopInfoByUserId(user.id)
         val root = HashMap<String, Any>()
         root["user"] = user
         root["heroes"] = shop
+        root["effects"] = effectShop
         model.addAllAttributes(root)
         return "main"
     }

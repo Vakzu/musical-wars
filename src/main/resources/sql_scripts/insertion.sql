@@ -16,51 +16,16 @@ VALUES ('Wolfgang Amadeus Mozart', 300, 100, 'mozart.jpg'),
        ('Dora', 10000, 999999, 'dora.jpg'),
        ('Samuel Kim', 10, 200, 'samuel.jpg'); -- jojo no music author
 
-INSERT INTO "note" ("name", "damage")
-VALUES ('A', 10),
-       ('B', 11),
-       ('C', 11),
-       ('D', 12),
-       ('E', 12),
-       ('F', 13),
-       ('G', 13);
-
-INSERT INTO "song" ("name", "experience_level", "hero_id")
-VALUES ('Ballade No. 1 in G minor Op. 23', 100, 5),
-       ('Moon Sonata', 76, 2),
-       ('Toccata and Fugue', 96, 3),
-       ('Requiem', 83, 1),
-       ('Swan Lake', 65, 4),
-       ('Dorafool', 0, 6),
-       ('Fell In Love', 0, 6),
-       ('Pink hair', 10, 6),
-       ('Pillar Men Theme', 0, 7);
-
-INSERT INTO "note_song" ("note_id", "song_id", "amount")
-VALUES (1, 1, 10),
-       (1, 2, 12),
-       (1, 4, 23),
-       (1, 9, 34),
-       (2, 5, 12),
-       (2, 7, 17),
-       (3, 4, 18),
-       (3, 8, 16),
-       (3, 1, 28),
-       (4, 7, 15),
-       (4, 9, 23),
-       (4, 6, 20),
-       (4, 3, 9),
-       (5, 2, 8),
-       (5, 7, 6),
-       (5, 3, 15),
-       (6, 6, 6),
-       (6, 7, 1),
-       (6, 5, 19),
-       (7, 1, 5),
-       (7, 2, 14),
-       (7, 3, 15),
-       (7, 4, 21),
-       (7, 8, 17);
+INSERT INTO "song" ("name", "experience_level", "hero_id", "damage")
+VALUES ('Ballade No. 1 in G minor Op. 23', 100, 5, 45),
+       ('Moon Sonata', 76, 2, 38),
+       ('Toccata and Fugue', 96, 3, 39),
+       ('Requiem', 83, 1, 18),
+       ('Swan Lake', 65, 4, 40),
+       ('Dorafool', 0, 6, 41),
+       ('Fell In Love', 0, 6, 43),
+       ('Pink hair', 10, 6, 43),
+       ('Pillar Men Theme', 0, 7, 43);
 
 INSERT INTO "effect" ("name", "price", "stamina", "strength", "luck", "constitution")
 VALUES ('Death 13', 50, 0, 4, 0, 1),

@@ -1,3 +1,96 @@
+CREATE OR REPLACE FUNCTION pay_for_hero_log() RETURNS trigger AS
+$$
+DECLARE
+    hero_price integer;
+    dealId integer;
+BEGIN
+    SELECT price INTO hero_price FROM hero WHERE id = NEW.id;
+
+    INSERT INTO "deal" (user_id, price)
+    VALUES (NEW.user_id, hero_price)
+    RETURNING id INTO dealId;
+
+    INSERT INTO "hero_deal" (hero_id, deal_id)
+    VALUES (NEW.hero_id, dealId);
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_effect_shop_info(userId integer)
+    RETURNS TABLE
+            (
+                id           integer,
+                name         varchar,
+                price        integer,
+                stamina      integer,
+                strength     integer,
+                luck         integer,
+                constitution integer,
+                amount       integer
+            )
+AS
+$$
+BEGIN
+    RETURN QUERY
+        SELECT *, coalesce((SELECT inventory.amount FROM inventory WHERE effect_id = e.id AND user_id = userId), 0)
+        FROM "effect" e;
+end;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER log_paying_for_hero BEFORE INSERT ON character
+    FOR EACH ROW EXECUTE FUNCTION pay_for_hero_log();
+
+
+CREATE OR REPLACE FUNCTION pay_for_effect_log() RETURNS trigger AS
+$$
+DECLARE
+    effect_price integer;
+    dealId integer;
+BEGIN
+    SELECT price INTO effect_price FROM effect WHERE id = NEW.id;
+
+    INSERT INTO "deal" (user_id, price)
+    VALUES (NEW.user_id, effect_price)
+    RETURNING id INTO dealId;
+
+    INSERT INTO "effect_deal" (effect_id, deal_id)
+    VALUES (NEW.id, dealId);
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER log_paying_for_effect BEFORE INSERT OR UPDATE ON inventory
+    FOR EACH ROW EXECUTE FUNCTION pay_for_effect_log();
+
+
+CREATE OR REPLACE FUNCTION buy_effect(userId integer, effectId integer) RETURNS bool AS
+$$
+DECLARE
+    effectPrice integer;
+    inventoryId integer;
+BEGIN
+    SELECT price INTO effectPrice FROM effect WHERE id = effectId;
+
+    IF effectPrice > (SELECT "balance" FROM "user" WHERE id = userId) THEN
+        RETURN false;
+    END IF;
+
+    UPDATE "user" SET "balance" = "balance" - effectPrice WHERE id = userId;
+
+    SELECT id INTO inventoryId FROM inventory WHERE user_id = userId AND effect_id = effectId;
+
+    IF inventoryId IS NULL THEN
+        INSERT INTO inventory (user_id, effect_id, amount) VALUES (userId, effectId, 1);
+    ELSE
+        UPDATE inventory SET amount = amount + 1 WHERE id = inventoryId;
+    END IF;
+
+    RETURN true;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION buy_hero(userId integer, heroId integer) RETURNS bool AS
 $$
 DECLARE
@@ -36,14 +129,12 @@ $$
 BEGIN
     RETURN QUERY
         SELECT "character".id, "character".user_id, -1, H.health,
-               SUM(amount * N.damage) AS "damage",
+               S."damage",
                0 AS "stamina",
                0 AS "luck"
         FROM "character"
                  JOIN "hero" H on "character".hero_id = H.id
                  JOIN "song" S on H.id = S.hero_id
-                 JOIN "note_song" NS on S.id = NS.song_id
-                 JOIN "note" N on N.id = NS.note_id
         WHERE "character".id = characterId
           AND S.id = songId
         GROUP BY "character".id, H.health;
@@ -79,7 +170,16 @@ $$
 DECLARE
     effect "effect"%ROWTYPE;
 BEGIN
-    SELECT * INTO effect FROM "effect" WHERE "effect".id = effectId;
+    SELECT * INTO effect FROM "effect"
+    WHERE "id" = effectId
+    AND EXISTS(SELECT * FROM inventory WHERE user_id = participant.user_id AND effect_id = effectId AND amount > 0);
+
+    IF effect IS NULL THEN
+        RETURN participant;
+    END IF;
+
+    UPDATE inventory SET amount = amount - 1 WHERE user_id = participant.user_id AND effect_id = effectId;
+--     SELECT * INTO effect FROM "effect" WHERE "effect".id = effectId;
     -- somehow increase damage and health
     -- for now assume values are in percents
     participant.health = participant.health * (1 + effect.constitution/100);
@@ -89,6 +189,29 @@ BEGIN
     participant.stamina = effect.stamina;
 
     RETURN participant;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_available_effects_for_user(userId integer) RETURNS SETOF "effect" AS
+$$
+BEGIN
+    RETURN QUERY
+        SELECT * FROM "effect"
+        WHERE id IN (SELECT effect_id FROM inventory WHERE user_id = userId AND amount > 0);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_available_songs_for_character(characterId integer) RETURNS SETOF "song" AS
+$$
+DECLARE
+    cur_character "character"%ROWTYPE;
+BEGIN
+    SELECT * FROM "character" WHERE id = characterId INTO cur_character;
+    RETURN QUERY
+        SELECT * FROM "song"
+        WHERE hero_id = cur_character.hero_id
+          AND "song"."experience_level" >= cur_character.experience;
+    RETURN;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -124,7 +247,6 @@ DECLARE
     kicks integer;
     alive_ids integer[] = characters;
     fightId integer;
-    fight_participants integer[];
     moveNumber integer = 0;
 BEGIN
     INSERT INTO "fight" (start, location_id) VALUES (now(), location) RETURNING "fight".id INTO fightId;
