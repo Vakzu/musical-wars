@@ -257,7 +257,7 @@ DECLARE
     fightId integer;
     moveNumber integer = 0;
 BEGIN
-    INSERT INTO "fight" (start, location_id) VALUES (now(), location) RETURNING "fight".id INTO fightId;
+    INSERT INTO "fight" (start_time, location_id) VALUES (now(), location) RETURNING "fight".id INTO fightId;
 
     FOR i in 1..array_length(characters, 1)
     LOOP

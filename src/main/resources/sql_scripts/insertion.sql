@@ -32,7 +32,7 @@ VALUES ('Death 13', 50, 0, 4, 0, 1),
        ('Sticky fingers', 70, 4, 0, 1, 1),
        ('Lucky bastard', 65, 1, 0, 5, 0);
 
-INSERT INTO "user" ("name", "is_online", "password")
+INSERT INTO "user" ("name", "is_online", "password_hash")
 VALUES ('Petya', true, 'qwety134'),
        ('Nastya', true, 'aboba2000');
 
