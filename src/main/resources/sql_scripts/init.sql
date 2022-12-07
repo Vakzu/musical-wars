@@ -1,10 +1,10 @@
-CREATE TABLE location
+CREATE TABLE "location"
 (
     "id"   serial PRIMARY KEY,
     "name" varchar(50) NOT NULL
 );
 
-CREATE TABLE hero
+CREATE TABLE "hero"
 (
     "id"     serial PRIMARY KEY,
     "name"   varchar(50) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE hero
     "img_path" varchar(50)
 );
 
-CREATE TABLE song
+CREATE TABLE "song"
 (
     "id"               serial PRIMARY KEY,
     "name"             varchar(50) NOT NULL,
@@ -24,11 +24,11 @@ CREATE TABLE song
 
 CREATE TABLE "user"
 (
-    "id"        serial PRIMARY KEY,
-    "name"      varchar(50)  NOT NULL,
-    "is_online" boolean      NOT NULL,
-    "balance"   integer      NOT NULL CHECK ("balance" >= 0) DEFAULT 1000,
-    "password"  varchar(255) NOT NULL
+    "id"            serial PRIMARY KEY,
+    "name"          varchar(50)  NOT NULL,
+    "is_online"     boolean      NOT NULL,
+    "balance"       integer      NOT NULL CHECK ("balance" >= 0) DEFAULT 1000,
+    "password_hash" varchar(255) NOT NULL
 );
 
 CREATE TABLE "effect"
@@ -53,7 +53,7 @@ CREATE TABLE "character"
 CREATE TABLE "fight"
 (
     "id"          serial PRIMARY KEY,
-    "start"       timestamp with time zone NOT NULL,
+    "start_time"  timestamp with time zone NOT NULL,
     "location_id" integer REFERENCES "location" ("id") ON DELETE SET NULL
 );
 
@@ -74,14 +74,14 @@ CREATE TABLE "fight_moves" (
     "fight_id" integer NOT NULL REFERENCES "fight" ("id"),
     "attacker_id" integer NOT NULL REFERENCES "fight_participant" ("id"),
     "victim_id" integer REFERENCES "fight_participant" ("id"),
-    "damage" integer NOT NULL,
+    "damage" integer NOT NULL CHECK ( "damage" > 0 ),
     PRIMARY KEY ("move_number", "fight_id")
 );
 
 CREATE TABLE "deal" (
     "id" serial PRIMARY KEY,
     "user_id" integer NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE,
-    "price" integer NOT NULL
+    "price" integer NOT NULL CHECK ( "price" > 0 )
 );
 
 CREATE TABLE "hero_deal" (
