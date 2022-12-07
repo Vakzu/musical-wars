@@ -6,10 +6,10 @@ CREATE TABLE "location"
 
 CREATE TABLE "hero"
 (
-    "id"     serial PRIMARY KEY,
-    "name"   varchar(50) NOT NULL,
-    "price"  integer     NOT NULL CHECK ("price" >= 0),
-    "health" integer     NOT NULL CHECK ("health" > 0),
+    "id"       serial PRIMARY KEY,
+    "name"     varchar(50) NOT NULL,
+    "price"    integer     NOT NULL CHECK ("price" >= 0),
+    "health"   integer     NOT NULL CHECK ("health" > 0),
     "img_path" varchar(50)
 );
 
@@ -33,13 +33,13 @@ CREATE TABLE "user"
 
 CREATE TABLE "effect"
 (
-    "id"    serial PRIMARY KEY,
-    "name"  varchar(50),
-    "price" integer NOT NULL CHECK ("price" >= 0),
-    "stamina" integer NOT NULL CHECK("stamina" >= 0),
-    "strength" integer NOT NULL CHECK("strength" >= 0),
-    "luck" integer NOT NULL CHECK("luck" >= 0),
-    "constitution" integer NOT NULL CHECK("constitution" >= 0)
+    "id"           serial PRIMARY KEY,
+    "name"         varchar(50),
+    "price"        integer NOT NULL CHECK ("price" >= 0),
+    "stamina"      integer NOT NULL CHECK ("stamina" >= 0),
+    "strength"     integer NOT NULL CHECK ("strength" >= 0),
+    "luck"         integer NOT NULL CHECK ("luck" >= 0),
+    "constitution" integer NOT NULL CHECK ("constitution" >= 0)
 );
 
 CREATE TABLE "character"
@@ -71,17 +71,17 @@ CREATE TABLE "fight_participant"
 
 CREATE TABLE "fight_moves" (
     "move_number" integer NOT NULL,
-    "fight_id" integer NOT NULL REFERENCES "fight" ("id"),
+    "fight_id"    integer NOT NULL REFERENCES "fight" ("id"),
     "attacker_id" integer NOT NULL REFERENCES "fight_participant" ("id"),
-    "victim_id" integer REFERENCES "fight_participant" ("id"),
-    "damage" integer NOT NULL CHECK ( "damage" > 0 ),
+    "victim_id"   integer REFERENCES "fight_participant" ("id"),
+    "damage"      integer NOT NULL CHECK ( "damage" > 0 ),
     PRIMARY KEY ("move_number", "fight_id")
 );
 
 CREATE TABLE "deal" (
-    "id" serial PRIMARY KEY,
+    "id"      serial PRIMARY KEY,
     "user_id" integer NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE,
-    "price" integer NOT NULL CHECK ( "price" > 0 )
+    "price"   integer NOT NULL CHECK ( "price" > 0 )
 );
 
 CREATE TABLE "hero_deal" (
@@ -90,13 +90,13 @@ CREATE TABLE "hero_deal" (
 );
 
 CREATE TABLE "effect_deal" (
-    "deal_id" integer NOT NULL REFERENCES "deal" ("id") ON DELETE CASCADE,
+    "deal_id"   integer NOT NULL REFERENCES "deal" ("id") ON DELETE CASCADE,
     "effect_id" integer NOT NULL REFERENCES "effect" ("id") ON DELETE CASCADE
 );
 
 CREATE TABLE "inventory" (
-    "id" serial PRIMARY KEY,
-    "user_id" integer NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE,
+    "id"        serial PRIMARY KEY,
+    "user_id"   integer NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE,
     "effect_id" integer NOT NULL REFERENCES "effect" ("id") ON DELETE CASCADE,
-    "amount" integer NOT NULL CHECK ("amount" >= 0)
+    "amount"    integer NOT NULL CHECK ("amount" >= 0)
 );
