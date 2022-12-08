@@ -50,6 +50,10 @@ DECLARE
     effect_price integer;
     dealId integer;
 BEGIN
+    IF NEW.amount < OLD.amount THEN
+        RETURN NEW;
+    END IF;
+    
     SELECT price INTO effect_price FROM effect WHERE id = NEW.id;
 
     INSERT INTO "deal" (user_id, price)
