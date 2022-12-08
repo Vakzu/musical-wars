@@ -81,6 +81,26 @@
                 }
             })
         }
+
+        function buy_effect(effectId) {
+            fetch("/buy/effect?effect_id=" + effectId, {
+                method: "POST"
+            }).then(res => {
+                if (res.status !== 200) {
+                    alert(res.body)
+                } else {
+                    res.text().then(text => {
+                            console.log(text)
+                            let span = document.querySelector("#effect-" + effectId + " .inventory")
+                            let price = document.querySelector("#effect-" + effectId + " button").innerHTML
+                            span.innerHTML = "" + (Number(span.innerHTML) + 1)
+                            let balance = document.querySelector("#balance")
+                            balance.innerHTML = "" + (Number(balance.innerHTML.replaceAll(",", "")) - Number(price))
+                        }
+                    )
+                }
+            })
+        }
     </script>
 </head>
 <body onload="connect()">
@@ -109,8 +129,7 @@
 </div>
 <div style="display: flex; justify-content: center">
     <#list effects as effect>
-        <div id="effect-${effect.id}" class="card" style="width: 18rem;">
-            <img class="card-img-top" src="images/none.jpg" alt="${effect.name}">
+        <div id="effect-${effect.id}" class="card" style="width: 18rem;" >
             <div class="card-body">
                 <h5 class="card-title">${effect.name}</h5>
                 <p class="card-text">
@@ -120,9 +139,9 @@
                     Constitution: ${effect.constitution}<br>
                 </p>
                 <p>
-                    Inventory: ${effect.amount}
+                    Inventory: <span class="inventory" >${effect.amount}</span>
                 </p>
-                <button type="button" onclick="alert('Bought')" class="btn btn-primary">${effect.price}</button>
+                <button type="button" onclick="buy_effect(${effect.id})" class="btn btn-primary">${effect.price}</button>
             </div>
         </div>
     </#list>

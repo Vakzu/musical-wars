@@ -193,7 +193,58 @@
             return outer
         }
 
+        let effects = [
+            {
+                id: 0,
+                name: "None",
+                stamina: 0,
+                strength: 0,
+                constitution: 0,
+                luck: 0,
+            },
+            <#list effects as effect>
+            {
+                id: ${effect.id},
+                name: "${effect.name}",
+                stamina: ${effect.stamina},
+                strength: ${effect.strength},
+                constitution: ${effect.constitution},
+                luck: ${effect.luck},
+            },
+            </#list>
+        ]
 
+        let heroList = [
+            <#list heroes as hero>
+            {
+                id: ${hero.id},
+                name: "${hero.heroName}",
+                health: ${hero.heroHealth}
+            },
+            </#list>
+        ]
+
+        function update_effect_stats() {
+            let effectId = Number(document.querySelector("#effect-select").value)
+            let effect = effects.find(e => e.id === effectId)
+            document.querySelector("#stamina").innerHTML = effect.stamina
+            document.querySelector("#strength").innerHTML = effect.strength
+            document.querySelector("#constitution").innerHTML = effect.constitution
+            document.querySelector("#luck").innerHTML = effect.luck
+        }
+
+        function update_hero_stats() {
+            let heroId = Number(document.querySelector("#hero-select").value)
+            let hero = heroList.find(h => h.id === heroId)
+            document.querySelector("#health").innerHTML = hero.health
+        }
+
+        function update_songs() {
+            let songId = document.querySelector("#song-select").value
+            let songs = []
+            fetch("/")
+
+        }
     </script>
 </head>
 <body onload="connect()">
@@ -234,49 +285,53 @@
 
         <div style="padding: 0.5em; width: 20em">
             <div id="config-panel" style="background: grey; width: 100%; height: 20em; padding: 4px">
-                <div id="effects-block" class="user-block" style="background: white; height: fit-content">
-                    <div>
-                        <label for="effect-select">Select hero:</label>
-                        <select id="effect-select">
-                            <#list effects as effect>
-                                <option value="${effect.id}">${effect.name}</option>
-                            </#list>
-                        </select>
-                        <div>
-                            <div>Stamina: ${effects[0].stamina!}</div>
-                            <div>Constitution: ${effects[0].constitution!}</div>
-                            <div>Luck: ${effects[0].luck!}</div>
-                            <div>Strength: ${effects[0].strength!}</div>
-                            <div style="color: red"><b>Price: ${effects[0].price!}</b></div>
-                        </div>
-                        <div>
-                        </div>
-                    </div>
-                </div>
                 <div class="user-block" style="background: white; height: fit-content">
                     <div>
                         <label for="hero-select">Select hero:</label>
-                        <select name="" id="hero-select">
+                        <select name="" id="hero-select" onchange="update_hero_stats()">
                             <#list heroes as hero>
                                 <option value="${hero.id}">${hero.heroName}</option>
                             </#list>
                         </select>
                         <#if heroes?size gt 0>
-                            <div>Health: ${heroes[0].heroHealth}</div>
+                            <div>Health: <span id="health">${heroes[0].heroHealth}</span></div>
                         </#if>
                     </div>
                 </div>
 
-                <div class="user-block" style="background: white">
+                <div id="effects-block" class="user-block" style="background: white; height: fit-content">
                     <div>
-                        <label for="y">Select song:</label>
-                        <select name="y" id="y">
-                            <option>A</option>
-                            <option>B</option>
-                            <option>C</option>
+                        <label for="effect-select">Select effect:</label>
+                        <select id="effect-select" onchange="update_effect_stats()">
+                            <option value="0">None</option>
+                            <#list effects as effect>
+                                <option value="${effect.id}">${effect.name}</option>
+                            </#list>
                         </select>
+                        <div>
+                            <div>Stamina: <span id="stamina">0</span></div>
+                            <div>Constitution: <span id="constitution">0</span></div>
+                            <div>Luck: <span id="luck">0</span></div>
+                            <div>Strength: <span id="strength">0</span></div>
+                        </div>
+                        <div>
+                        </div>
                     </div>
                 </div>
+
+<#--                <div class="user-block" style="background: white">-->
+<#--                    <div>-->
+<#--                        <label for="song-select">Select song:</label>-->
+<#--                        <select name="song-select" id="song-select">-->
+<#--                            <#list songs as song>-->
+<#--                                <option value="${song.id}">${song.name}</option>-->
+<#--                            </#list>-->
+<#--                        </select>-->
+<#--                        <#if songs?size gt 0>-->
+<#--                            <div>Damage: <span id="song-damage">${songs[0].damage}</span></div>-->
+<#--                        </#if>-->
+<#--                    </div>-->
+<#--                </div>-->
             </div>
         </div>
     </div>
