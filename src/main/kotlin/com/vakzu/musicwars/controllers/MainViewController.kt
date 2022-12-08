@@ -6,11 +6,13 @@ import com.vakzu.musicwars.dto.ReadyResponse
 import com.vakzu.musicwars.dto.RegisterRequest
 import com.vakzu.musicwars.dto.SetReadyRequest
 import com.vakzu.musicwars.dto.websocket.CommandType
+import com.vakzu.musicwars.entities.FightMove
 import com.vakzu.musicwars.lobby.LobbyService
 import com.vakzu.musicwars.repos.CharacterRepository
 import com.vakzu.musicwars.repos.EffectRepository
 import com.vakzu.musicwars.security.MyUserPrincipal
 import com.vakzu.musicwars.security.UserService
+import com.vakzu.musicwars.services.FightService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -26,7 +28,8 @@ class MainViewController(
     val userService: UserService,
     val lobbyService: LobbyService,
     val effectRepository: EffectRepository,
-    val characterRepository: CharacterRepository
+    val characterRepository: CharacterRepository,
+    val fightService: FightService
 ) {
 
     @GetMapping("/")
@@ -88,7 +91,7 @@ class MainViewController(
 
         messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", OnlineMessage(CommandType.JOIN, user.id, user.name))
 
-        return "redirect:/war/${lobbyId}"
+        return "redirect:/war/$lobbyId"
     }
 
     @PostMapping("/lobby/leave")
@@ -140,8 +143,19 @@ class MainViewController(
     }
 
     @PostMapping("/war/{lobbyId}/start")
-    fun beginFight(@PathVariable lobbyId: String, userId: Int) {
+    fun beginFight(@PathVariable lobbyId: String, @RequestParam locationId: Int): String {
+        val lobby = lobbyService.getLobby(lobbyId)
+        lobby.locationId = locationId
+        return "redirect:/war/$lobbyId/fight"
+    }
 
+    @GetMapping("/war/{lobbyId}/fight")
+    fun getFightPage(@PathVariable lobbyId: String, @RequestParam locationId: Int): List<FightMove> {
+        val lobby = lobbyService.getLobby(lobbyId)
+        if (lobby.isEveryoneReady()) {
+            return fightService.playFight(lobby)
+        }
+        return emptyList()
     }
 
     @GetMapping("/statistics")
