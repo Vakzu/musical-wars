@@ -1,8 +1,10 @@
 package com.vakzu.musicwars.controllers
 
-import com.vakzu.musicwars.OnlineMessage
+import com.vakzu.musicwars.dto.OnlineMessage
 import com.vakzu.musicwars.dto.CharacterDto
+import com.vakzu.musicwars.dto.ReadyResponse
 import com.vakzu.musicwars.dto.RegisterRequest
+import com.vakzu.musicwars.dto.SetReadyRequest
 import com.vakzu.musicwars.dto.websocket.CommandType
 import com.vakzu.musicwars.lobby.LobbyService
 import com.vakzu.musicwars.repos.CharacterRepository
@@ -118,4 +120,39 @@ class MainViewController(
         val result = effectRepository.buyEffect(user.id, effectId)
         return ResponseEntity<Void>(if (result) HttpStatus.OK else HttpStatus.BAD_REQUEST)
     }
+
+    @PostMapping("/war/{lobbyId}/ready/set")
+    @ResponseBody
+    fun setReady(@PathVariable lobbyId: String, readyRequest: SetReadyRequest, principal: Principal) {
+        val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
+        val lobby = lobbyService.getLobby(lobbyId)
+        lobby.setReady(user, readyRequest)
+        messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", ReadyResponse(CommandType.SET_READY, user.id))
+    }
+
+    @PostMapping("/war/{lobbyId}/ready/cancel")
+    @ResponseBody
+    fun cancelReady(@PathVariable lobbyId: String, principal: Principal) {
+        val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
+        val lobby = lobbyService.getLobby(lobbyId)
+        lobby.cancelReady(user)
+        messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", ReadyResponse(CommandType.CANCEL_READY, user.id))
+    }
+
+    @PostMapping("/war/{lobbyId}/start")
+    fun beginFight(@PathVariable lobbyId: String, userId: Int) {
+
+    }
+
+    @GetMapping("/statistics")
+    fun getStatistics(principal: Principal, model: Model): String {
+        val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
+        val statistics = userService.getUserStatistics(user.id)
+        val root = HashMap<String, Any>()
+        root["user"] = user
+        root["statistics"] = statistics
+        model.addAllAttributes(root)
+        return "statistics"
+    }
+
 }
