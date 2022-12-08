@@ -61,7 +61,7 @@ BEGIN
     RETURNING id INTO dealId;
 
     INSERT INTO "effect_deal" (effect_id, deal_id)
-    VALUES (NEW.id, dealId);
+    VALUES (NEW.effect_id, dealId);
 
     RETURN NEW;
 END;
