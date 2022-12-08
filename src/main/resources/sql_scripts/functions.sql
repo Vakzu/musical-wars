@@ -50,7 +50,8 @@ DECLARE
     effect_price integer;
     dealId integer;
 BEGIN
-    IF NEW.amount < OLD.amount THEN
+    -- If we increase effect amount in inventory then we log deal
+    IF TG_OP = 'UPDATE' AND NEW.amount < OLD.amount THEN
         RETURN NEW;
     END IF;
     
