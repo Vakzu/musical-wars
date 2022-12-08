@@ -1,4 +1,4 @@
-CREATE INDEX ON "user" using hash("name");
+CREATE INDEX ON "user" using hash("id");
 
 CREATE INDEX ON "character" using hash("id");
 
