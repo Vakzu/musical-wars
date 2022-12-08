@@ -1,3 +1,4 @@
+-- Тригер для записи транзакции платежа за героя
 CREATE OR REPLACE FUNCTION pay_for_hero_log() RETURNS trigger AS
 $$
 DECLARE
@@ -17,11 +18,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE TRIGGER log_paying_for_hero BEFORE INSERT ON character
+    FOR EACH ROW EXECUTE FUNCTION pay_for_hero_log();
+
+-- Возвращает все эффекты, которые можно использовать текущему игроку
 CREATE OR REPLACE FUNCTION get_effect_shop_info(userId integer)
     RETURNS TABLE
             (
                 id           integer,
-                name         varchar,
+                "name"       varchar(50),
                 price        integer,
                 stamina      integer,
                 strength     integer,
@@ -38,17 +43,19 @@ BEGIN
 end;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER log_paying_for_hero BEFORE INSERT ON character
-    FOR EACH ROW EXECUTE FUNCTION pay_for_hero_log();
-
-
+-- Тригер для записи транзакции платежа за эффект
 CREATE OR REPLACE FUNCTION pay_for_effect_log() RETURNS trigger AS
 $$
 DECLARE
     effect_price integer;
     dealId integer;
 BEGIN
-    SELECT price INTO effect_price FROM effect WHERE id = NEW.effect_id;
+    -- If we increase effect amount in inventory then we log deal
+    IF TG_OP = 'UPDATE' AND NEW.amount < OLD.amount THEN
+        RETURN NEW;
+    END IF;
+    
+    SELECT price INTO effect_price FROM effect WHERE id = NEW.id;
 
     INSERT INTO "deal" (user_id, price)
     VALUES (NEW.user_id, effect_price)
@@ -64,7 +71,8 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER log_paying_for_effect BEFORE INSERT OR UPDATE ON inventory
     FOR EACH ROW EXECUTE FUNCTION pay_for_effect_log();
 
-
+-- Функция покупки эффекта
+-- Если у пользователя хватает денег на эффект, то покупаем эффект вычитая стоимость из баланса и занося в inventory
 CREATE OR REPLACE FUNCTION buy_effect(userId integer, effectId integer) RETURNS bool AS
 $$
 DECLARE
@@ -91,6 +99,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Функция покупки персонажа
+-- Если у игрока хватает денег, то вычитаем стоимость персонажа из баланса и добавляем героя связывая с игроком
 CREATE OR REPLACE FUNCTION buy_hero(userId integer, heroId integer) RETURNS bool AS
 $$
 DECLARE
@@ -124,6 +134,7 @@ CREATE TYPE participant_info AS
     "luck"           integer
 );
 
+-- Возвращает основную информацию по герою(id, id игрока, id_в_драке, здоровье, урон, выносливость, удача)
 CREATE OR REPLACE FUNCTION get_base_character_info(characterId integer, songId integer) RETURNS SETOF participant_info AS
 $$
 BEGIN
@@ -141,6 +152,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Возвращает список доступных для покупки персонажей с их характеристиками(id, имя, цена, здоровье, аватарка, id_игрока)
 CREATE OR REPLACE function get_shop_info_for_user(requested_id int)
     returns TABLE(hero_id integer, name character varying, price integer, health integer, img_path varchar, user_id int)
 as
@@ -153,6 +165,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Возвращает список информаций по участникам драки основываясь участниках и их песнях
 CREATE OR REPLACE FUNCTION get_characters_info_with_songs(characters integer[], songs integer[]) RETURNS SETOF participant_info AS
 $$
 DECLARE
@@ -165,6 +178,7 @@ BEGIN
 end;
 $$ LANGUAGE plpgsql;
 
+-- Изменяет характеристики участника драки в соответствии с выбранным эффектом
 CREATE OR REPLACE FUNCTION get_upgrade_character_info(participant participant_info, effectId integer) RETURNS participant_info AS
 $$
 DECLARE
@@ -192,6 +206,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Выводит список доступных эффектов для выбора для игрока
 CREATE OR REPLACE FUNCTION get_available_effects_for_user(userId integer) RETURNS SETOF "effect" AS
 $$
 BEGIN
@@ -201,6 +216,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Выводит список доступных песен для героя
 CREATE OR REPLACE FUNCTION get_available_songs_for_character(characterId integer) RETURNS SETOF "song" AS
 $$
 DECLARE
@@ -229,13 +245,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION begin_fight(integer[], integer[], integer[], integer) RETURNS SETOF "fight_moves" AS
+-- Функция для начала сражения
+CREATE OR REPLACE FUNCTION begin_fight(characters integer[], effects integer[], songs integer[], location integer) RETURNS SETOF "fight_moves" AS
 $$
 DECLARE
-    characters ALIAS FOR $1;
-    effects ALIAS FOR $2;
-    songs ALIAS FOR $3;
-    location ALIAS FOR $4;
     orders integer[] = (SELECT array_agg(gs.val) FROM generate_series(1, array_length(characters, 1)) gs(val));
     character_info participant_info[];
     x participant_info;
@@ -249,7 +262,7 @@ DECLARE
     fightId integer;
     moveNumber integer = 0;
 BEGIN
-    INSERT INTO "fight" (start, location_id) VALUES (now(), location) RETURNING "fight".id INTO fightId;
+    INSERT INTO "fight" (start_time, location_id) VALUES (now(), location) RETURNING "fight".id INTO fightId;
 
     FOR i in 1..array_length(characters, 1)
     LOOP

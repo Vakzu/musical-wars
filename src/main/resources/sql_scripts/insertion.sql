@@ -30,13 +30,64 @@ VALUES ('Ballade No. 1 in G minor Op. 23', 100, 5, 45),
 INSERT INTO "effect" ("name", "price", "stamina", "strength", "luck", "constitution")
 VALUES ('Death 13', 50, 0, 4, 0, 1),
        ('Sticky fingers', 70, 4, 0, 1, 1),
-       ('Lucky bastard', 65, 1, 0, 5, 0);
+       ('Lucky bastard', 65, 1, 0, 5, 0),
+       ('Stop me pls', 70, 1, 5, 5, 0),
+       ('Stop him ahaha', 5, 5, 0, 5, 0);
 
-INSERT INTO "user" ("name", "is_online", "password")
-VALUES ('Petya', true, 'qwety134'),
-       ('Nastya', true, 'aboba2000');
+INSERT INTO "user" ("name", "is_online", "password_hash")
+VALUES ('Petya', true, '213192873123978'),
+       ('Nastya', true, '1927398127391273'),
+       ('Katya', true, '1927398172937123'),
+       ('Lesya', true, '1827391723791273'),
+       ('Grenka', true, '9871203791273'),
+       ('Ohmy', true, '1231928030128398213'),
+       ('Dmittrey', false, '012983091823081023'),
+       ('ohohoh', false, '09182309120938091283'),
+       ('guyscommon', false, '120938091283081238'),
+       ('stopthis', false, '1298737123789123'),
+       ('mymind', false, '891273dqy92dy8921e'),
+       ('isfull', false, '1298uydh9u2h18e091e'),
+       ('imdone', false, '219d8u2198dhj8921odh'),
+       ('kjkjkjkj', false, 'd912hd989hj18d'),
+       ('somename1', true, '12d91hd98128d9n1d'),
+       ('somename2', true, 'dn1929dn1928d8n12d'),
+       ('anothername', true, 'd129dn812d8h1280jd0');
 
 INSERT INTO "character" ("experience", "hero_id", "user_id")
 VALUES (0, 6, 1),
        (5, 3, 1),
-       (60, 7, 2);
+       (60, 7, 2),
+       (12, 3, 3),
+       (45, 4, 4),
+       (67, 5, 5),
+       (3, 6, 1),
+       (2, 2, 2),
+       (56, 1, 2),
+       (23, 6, 2),
+       (11, 4, 3),
+       (12, 5, 4),
+       (67, 3, 5),
+       (90, 4, 6),
+       (11, 4, 3),
+       (11, 5, 3),
+       (11, 6, 3),
+       (11, 7, 3),
+       (11, 4, 4),
+       (11, 4, 5),
+       (11, 4, 6),
+       (11, 4, 7),
+       (11, 4, 7);
+
+INSERT INTO "inventory" ("user_id", "effect_id", "amount")
+VALUES (1, 2, 1),
+       (2, 3, 5),
+       (3, 1, 4),
+       (4, 2, 3),
+       (5, 3, 6),
+       (1, 2, 6),
+       (2, 2, 6),
+       (3, 1, 2),
+       (4, 1, 1),
+       (5, 3, 3),
+       (6, 3, 4),
+       (7, 3, 5);

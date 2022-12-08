@@ -1,0 +1,25 @@
+DROP TABLE IF EXISTS "location";
+
+DROP TABLE IF EXISTS "hero";
+
+DROP TABLE IF EXISTS "song";
+
+DROP TABLE IF EXISTS "user";
+
+DROP TABLE IF EXISTS "effect";
+
+DROP TABLE IF EXISTS "character";
+
+DROP TABLE IF EXISTS "fight";
+
+DROP TABLE IF EXISTS "fight_participant";
+
+DROP TABLE IF EXISTS "fight_moves";
+
+DROP TABLE IF EXISTS "deal";
+
+DROP TABLE IF EXISTS "hero_deal";
+
+DROP TABLE IF EXISTS "effect_deal";
+
+DROP TABLE IF EXISTS "inventory";
