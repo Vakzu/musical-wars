@@ -67,7 +67,7 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
+--
 CREATE TRIGGER log_paying_for_effect BEFORE INSERT OR UPDATE ON inventory
     FOR EACH ROW EXECUTE FUNCTION pay_for_effect_log();
 
@@ -121,6 +121,48 @@ BEGIN
 
     RETURN TRUE;
 END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_statistics(userId int) RETURNS TABLE
+                                                              (
+                                                                  gamesCount   int,
+                                                                  winsCount    int,
+                                                                  averagePrice float,
+                                                                  lastGameDate timestamp with time zone
+                                                              ) AS
+$$DECLARE
+    games_count int;
+    wins_count int;
+    average_price float;
+    last_game_date timestamp with time zone;
+    BEGIN
+    SELECT count(*) INTO games_count FROM fight_participant
+                             JOIN character c on fight_participant.character_id = c.id
+                             JOIN "user" u on c.user_id = u.id
+    WHERE u.id = 1;
+
+    SELECT COUNT(*) INTO wins_count FROM fight_participant
+                             JOIN character c on fight_participant.character_id = c.id
+                             JOIN "user" u on c.user_id = u.id
+    WHERE u.id = 1
+      AND fight_participant.position = 1;
+
+    SELECT avg(fight_participant.position) INTO average_price FROM fight_participant
+                                                    JOIN character c on fight_participant.character_id = c.id
+                                                    JOIN "user" u on c.user_id = u.id
+    WHERE u.id = 1
+      AND fight_participant.position = 1;
+
+    SELECT COUNT(*) INTO last_game_date FROM fight_participant
+                             JOIN character c on fight_participant.character_id = c.id
+                             JOIN "user" u on c.user_id = u.id
+                             JOIN fight f on fight_participant.fight_id = f.id
+    WHERE u.id = 1
+      AND f.start_time
+    LIMIT 1;
+
+    RETURN (games_count, wins_count, average_price, last_game_date);
+end;
 $$ LANGUAGE plpgsql;
 
 CREATE TYPE participant_info AS
