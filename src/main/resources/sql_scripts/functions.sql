@@ -139,25 +139,25 @@ $$DECLARE
     SELECT count(*) INTO games_count FROM fight_participant
                              JOIN character c on fight_participant.character_id = c.id
                              JOIN "user" u on c.user_id = u.id
-    WHERE u.id = 1;
+    WHERE u.id = userId;
 
     SELECT COUNT(*) INTO wins_count FROM fight_participant
                              JOIN character c on fight_participant.character_id = c.id
                              JOIN "user" u on c.user_id = u.id
-    WHERE u.id = 1
+    WHERE u.id = userId
       AND fight_participant.position = 1;
 
     SELECT avg(fight_participant.position) INTO average_price FROM fight_participant
                                                     JOIN character c on fight_participant.character_id = c.id
                                                     JOIN "user" u on c.user_id = u.id
-    WHERE u.id = 1
+    WHERE u.id = userId
       AND fight_participant.position = 1;
 
     SELECT COUNT(*) INTO last_game_date FROM fight_participant
                              JOIN character c on fight_participant.character_id = c.id
                              JOIN "user" u on c.user_id = u.id
                              JOIN fight f on fight_participant.fight_id = f.id
-    WHERE u.id = 1
+    WHERE u.id = userId
       AND f.start_time
     LIMIT 1;
 
@@ -303,6 +303,7 @@ DECLARE
     alive_ids integer[] = characters;
     fightId integer;
     moveNumber integer = 0;
+    curDamage integer = 0;
 BEGIN
     INSERT INTO "fight" (start_time, location_id) VALUES (now(), location) RETURNING "fight".id INTO fightId;
 
@@ -356,10 +357,17 @@ BEGIN
                 LOOP
                     IF (y.id = alive_ids[p]) THEN
                         RAISE NOTICE 'victim is %', y.id;
-                        INSERT INTO "fight_moves" (move_number, fight_id, attacker_id, victim_id, damage)
-                        VALUES (moveNumber, fightId, x.participant_id, y.participant_id, x.damage);
 
-                        y.health = y.health - x.damage;
+                        IF (random() < x.luck / 20) THEN
+                            curDamage = 0;
+                        ELSE
+                            curDamage = x.damage;
+                        END IF;
+
+                        INSERT INTO "fight_moves" (move_number, fight_id, attacker_id, victim_id, damage)
+                        VALUES (moveNumber, fightId, x.participant_id, y.participant_id, curDamage);
+
+                        y.health = y.health - curDamage;
 
                         IF (y.health <= 0) THEN
                             alive_amount = alive_amount - 1;
