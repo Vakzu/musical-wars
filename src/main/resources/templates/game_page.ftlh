@@ -97,6 +97,9 @@
             switch (messageOutput.type) {
                 case "JOIN": addUserToLobby(messageOutput); break;
                 case "LEAVE": removeLobbyUser(messageOutput); break;
+                case "SET_READY": updateReadyUI(messageOutput.userId, "green"); break;
+                case "CANCEL_READY": updateReadyUI(messageOutput.userId, "red"); break;
+                default: drawBattleMovement(messageOutput); break;
             }
         }
 
@@ -186,6 +189,7 @@
             let status = document.createElement("div")
             status.style.background = "red"
             status.style.flexGrow = "1"
+            status.classList.add("ready-status")
 
             outer.append(name)
             outer.append(status)
@@ -269,6 +273,64 @@
             let song = songs.find(s => s.id === songId)
             document.querySelector("#song-damage").innerHTML = song.damage
         }
+
+        function setReadyState() {
+            let characterId = Number(document.querySelector("#hero-select").value)
+            let songId = Number(document.querySelector("#song-select").value)
+            let effectId = Number(document.querySelector("#effect-select").value)
+            let request = { "commandType": "SET_READY", "characterId": characterId, "songId": songId, "effectId": effectId }
+
+            fetch("/war/${lobbyId}/ready/set", {
+                method: "POST",
+                body: JSON.stringify(request),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+        }
+
+        function cancelReadyState() {
+            let request = { commandType: "CANCEL_READY" }
+
+            fetch("/war/${lobbyId}/ready/cancel", {
+                method: "POST",
+                body: JSON.stringify(request),
+            })
+        }
+
+        let isReady = false
+        function resolveReadyState(source) {
+            if (isReady) {
+                cancelReadyState()
+                source.innerHTML = "Ready"
+                isReady = false
+            } else {
+                setReadyState()
+                source.innerHTML = "Cancel"
+                isReady = true
+            }
+        }
+
+        function updateReadyUI(uid, color) {
+            let block = document.querySelector("#lobby-user-" + uid + " .ready-status")
+            block.style.background = color
+        }
+
+        function beginFight() {
+            fetch("/war/${lobbyId}/start", {
+                method: "POST"
+            }).then(res => {
+                if (res.status === 400) {
+                    alert("Not all players are ready")
+                }
+                console.log("Battle conducted")
+            })
+        }
+
+        function drawBattleMovement(moves) {
+            console.log(moves)
+        }
+
     </script>
 </head>
 <body onload="connect()">
@@ -293,7 +355,7 @@
                         <div style="background: white; line-height: 2em; padding: 0 4px; flex-grow: 7">
                             ${lobbyUs.username}
                         </div>
-                        <div style="background: ${lobbyUs.ready?then('green', 'red')}; flex-grow: 1"></div>
+                        <div class="ready-status" style="background: ${lobbyUs.ready?then('green', 'red')}; flex-grow: 1"></div>
                     </div>
                 </#list>
             </div>
@@ -360,8 +422,11 @@
         </div>
     </div>
     <div style="display: flex; justify-content: center">
-        <button type="button">Ready</button>
+        <button type="button" onclick="resolveReadyState(this)" >Ready</button>
         <button type="button" onclick="leaveLobby('${lobbyId}')" >Leave</button>
+        <#if isHost>
+            <button onclick="beginFight()">Begin fight</button>
+        </#if>
     </div>
 </body>
 </html>

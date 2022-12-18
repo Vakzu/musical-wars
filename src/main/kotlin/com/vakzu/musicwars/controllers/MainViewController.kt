@@ -131,7 +131,7 @@ class MainViewController(
 
     @PostMapping("/war/{lobbyId}/ready/set")
     @ResponseBody
-    fun setReady(@PathVariable lobbyId: String, readyRequest: SetReadyRequest, principal: Principal) {
+    fun setReady(@PathVariable lobbyId: String, @RequestBody(required = true) readyRequest: SetReadyRequest, principal: Principal) {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
         val lobby = lobbyService.getLobby(lobbyId)
         lobby.setReady(user, readyRequest)
