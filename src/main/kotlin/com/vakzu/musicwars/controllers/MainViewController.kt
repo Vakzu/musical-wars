@@ -1,12 +1,7 @@
 package com.vakzu.musicwars.controllers
 
-import com.vakzu.musicwars.dto.OnlineMessage
-import com.vakzu.musicwars.dto.CharacterDto
-import com.vakzu.musicwars.dto.ReadyResponse
-import com.vakzu.musicwars.dto.RegisterRequest
-import com.vakzu.musicwars.dto.SetReadyRequest
+import com.vakzu.musicwars.dto.*
 import com.vakzu.musicwars.dto.websocket.CommandType
-import com.vakzu.musicwars.entities.FightMove
 import com.vakzu.musicwars.lobby.LobbyService
 import com.vakzu.musicwars.repos.CharacterRepository
 import com.vakzu.musicwars.repos.EffectRepository
@@ -76,7 +71,7 @@ class MainViewController(
         return "game_page"
     }
 
-    @GetMapping("/lobby/create")
+    @PostMapping("/lobby/create")
     fun createLobby(principal: Principal): String {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
         val uuid = lobbyService.createLobby(user)
@@ -143,20 +138,28 @@ class MainViewController(
     }
 
     @PostMapping("/war/{lobbyId}/start")
-    fun beginFight(@PathVariable lobbyId: String, @RequestParam locationId: Int): String {
+    @ResponseBody
+    fun beginFight(@PathVariable lobbyId: String, @RequestParam locationId: Int): ResponseEntity<*> {
         val lobby = lobbyService.getLobby(lobbyId)
         lobby.locationId = locationId
-        return "redirect:/war/$lobbyId/fight"
+        if (lobby.isEveryoneReady()) {
+            val moves =  fightService.playFight(lobby)
+            val fightMoves = moves.map { FightMoveResponse(it.id.moveNumber, it.id.fightId, it.attackerId, it.victimId, it.damage) }
+            messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", fightMoves)
+            return ResponseEntity<Void>(HttpStatus.OK)
+        }
+        return ResponseEntity<Void>(HttpStatus.BAD_REQUEST)
     }
 
-    @GetMapping("/war/{lobbyId}/fight")
-    fun getFightPage(@PathVariable lobbyId: String, @RequestParam locationId: Int): List<FightMove> {
-        val lobby = lobbyService.getLobby(lobbyId)
-        if (lobby.isEveryoneReady()) {
-            return fightService.playFight(lobby)
-        }
-        return emptyList()
-    }
+//    @GetMapping("/war/{lobbyId}/fight")
+//    @ResponseBody
+//    fun getFightPage(@PathVariable lobbyId: String, @RequestParam locationId: Int): List<FightMove> {
+//        val lobby = lobbyService.getLobby(lobbyId)
+//        if (lobby.isEveryoneReady()) {
+//            return fightService.playFight(lobby)
+//        }
+//        return emptyList()
+//    }
 
     @GetMapping("/statistics")
     fun getStatistics(principal: Principal, model: Model): String {

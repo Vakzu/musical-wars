@@ -8,18 +8,9 @@ public class FightMove {
     @EmbeddedId
     private FightMoveId id;
 
-    @MapsId("fightId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "fight_id", nullable = false)
-    private Fight fight;
+    private Integer attackerId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "attacker_id", nullable = false)
-    private FightParticipant attacker;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "victim_id")
-    private FightParticipant victim;
+    private Integer victimId;
 
     @Column(name = "damage", nullable = false)
     private Integer damage;
@@ -32,28 +23,20 @@ public class FightMove {
         this.id = id;
     }
 
-    public Fight getFight() {
-        return fight;
+    public Integer getAttackerId() {
+        return attackerId;
     }
 
-    public void setFight(Fight fight) {
-        this.fight = fight;
+    public void setAttackerId(Integer attackerId) {
+        this.attackerId = attackerId;
     }
 
-    public FightParticipant getAttacker() {
-        return attacker;
+    public Integer getVictimId() {
+        return victimId;
     }
 
-    public void setAttacker(FightParticipant attacker) {
-        this.attacker = attacker;
-    }
-
-    public FightParticipant getVictim() {
-        return victim;
-    }
-
-    public void setVictim(FightParticipant victim) {
-        this.victim = victim;
+    public void setVictimId(Integer victimId) {
+        this.victimId = victimId;
     }
 
     public Integer getDamage() {
