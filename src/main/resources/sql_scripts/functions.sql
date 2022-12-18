@@ -5,7 +5,7 @@ DECLARE
     hero_price integer;
     dealId integer;
 BEGIN
-    SELECT price INTO hero_price FROM hero WHERE id = NEW.id;
+    SELECT price INTO hero_price FROM hero WHERE id = NEW.hero_id;
 
     INSERT INTO "deal" (user_id, price)
     VALUES (NEW.user_id, hero_price)
@@ -55,7 +55,7 @@ BEGIN
         RETURN NEW;
     END IF;
     
-    SELECT price INTO effect_price FROM effect WHERE id = NEW.id;
+    SELECT price INTO effect_price FROM effect WHERE id = NEW.effect_id;
 
     INSERT INTO "deal" (user_id, price)
     VALUES (NEW.user_id, effect_price)
@@ -136,24 +136,24 @@ $$DECLARE
     average_price float;
     last_game_date timestamp with time zone;
     BEGIN
-    SELECT count(*) INTO games_count FROM fight_participant
+    SELECT count(*) INTO gamesCount FROM fight_participant
                              JOIN character c on fight_participant.character_id = c.id
                              JOIN "user" u on c.user_id = u.id
     WHERE u.id = userId;
 
-    SELECT COUNT(*) INTO wins_count FROM fight_participant
+    SELECT COUNT(*) INTO winsCount FROM fight_participant
                              JOIN character c on fight_participant.character_id = c.id
                              JOIN "user" u on c.user_id = u.id
     WHERE u.id = userId
       AND fight_participant.position = 1;
 
-    SELECT avg(fight_participant.position) INTO average_price FROM fight_participant
+    SELECT avg(fight_participant.position) INTO averagePrice FROM fight_participant
                                                     JOIN character c on fight_participant.character_id = c.id
                                                     JOIN "user" u on c.user_id = u.id
     WHERE u.id = userId
       AND fight_participant.position = 1;
 
-    SELECT COUNT(*) INTO last_game_date FROM fight_participant
+    SELECT COUNT(*) INTO lastGameDate FROM fight_participant
                              JOIN character c on fight_participant.character_id = c.id
                              JOIN "user" u on c.user_id = u.id
                              JOIN fight f on fight_participant.fight_id = f.id
@@ -161,7 +161,8 @@ $$DECLARE
       AND f.start_time
     LIMIT 1;
 
-    RETURN (games_count, wins_count, average_price, last_game_date);
+--     RETURN NEXT (games_count, wins_count, average_price, last_game_date);
+    RETURN NEXT;
 end;
 $$ LANGUAGE plpgsql;
 

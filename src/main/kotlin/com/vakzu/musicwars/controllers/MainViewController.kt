@@ -5,6 +5,7 @@ import com.vakzu.musicwars.dto.websocket.CommandType
 import com.vakzu.musicwars.lobby.LobbyService
 import com.vakzu.musicwars.repos.CharacterRepository
 import com.vakzu.musicwars.repos.EffectRepository
+import com.vakzu.musicwars.repos.SongRepository
 import com.vakzu.musicwars.security.MyUserPrincipal
 import com.vakzu.musicwars.security.UserService
 import com.vakzu.musicwars.services.FightService
@@ -24,7 +25,8 @@ class MainViewController(
     val lobbyService: LobbyService,
     val effectRepository: EffectRepository,
     val characterRepository: CharacterRepository,
-    val fightService: FightService
+    val fightService: FightService,
+    val songRepository: SongRepository
 ) {
 
     @GetMapping("/")
@@ -60,6 +62,12 @@ class MainViewController(
         val lobbyUsers = lobbyService.getLobbyUsers(lobbyId)
         val effects = effectRepository.findEffectByUserId(user.id)
         val characters = characterRepository.findAllByUserId(user.id).map { CharacterDto(it.id, it.hero.name, it.hero.health) }
+        val songs: List<SongDto> = if (characters.isNotEmpty()) {
+            songRepository.getCharacterAvailableSongs(characters[0].id!!).map { SongDto(it.id, it.name, it.damage) }
+        }  else {
+            emptyList()
+        }
+        val isHost = lobbyService.getLobby(lobbyId).hostId == user.id
         val root = HashMap<String, Any>()
         root["user"] = user
         root["onlineUsers"] = onlineUsers
@@ -67,6 +75,8 @@ class MainViewController(
         root["lobbyId"] = lobbyId
         root["effects"] = effects
         root["heroes"] = characters
+        root["songs"] = songs
+        root["isHost"] = isHost
         model.addAllAttributes(root)
         return "game_page"
     }
@@ -151,16 +161,6 @@ class MainViewController(
         return ResponseEntity<Void>(HttpStatus.BAD_REQUEST)
     }
 
-//    @GetMapping("/war/{lobbyId}/fight")
-//    @ResponseBody
-//    fun getFightPage(@PathVariable lobbyId: String, @RequestParam locationId: Int): List<FightMove> {
-//        val lobby = lobbyService.getLobby(lobbyId)
-//        if (lobby.isEveryoneReady()) {
-//            return fightService.playFight(lobby)
-//        }
-//        return emptyList()
-//    }
-
     @GetMapping("/statistics")
     fun getStatistics(principal: Principal, model: Model): String {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
@@ -170,6 +170,13 @@ class MainViewController(
         root["statistics"] = statistics
         model.addAllAttributes(root)
         return "statistics"
+    }
+
+    @GetMapping("/characters/{characterId}/songs")
+    @ResponseBody
+    fun getAvailableSongs(@PathVariable characterId: Int): List<SongDto> {
+        val songs = songRepository.getCharacterAvailableSongs(characterId)
+        return songs.map { SongDto(it.id, it.name, it.damage) }
     }
 
 }

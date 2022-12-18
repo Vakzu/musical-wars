@@ -235,15 +235,39 @@
 
         function update_hero_stats() {
             let heroId = Number(document.querySelector("#hero-select").value)
+            update_songs(heroId)
             let hero = heroList.find(h => h.id === heroId)
             document.querySelector("#health").innerHTML = hero.health
         }
 
-        function update_songs() {
-            let songId = document.querySelector("#song-select").value
-            let songs = []
-            fetch("/")
+        let songs = []
 
+        function update_songs(heroId) {
+            let songSelector = document.querySelector("#song-select")
+
+            fetch("/characters/" + heroId + "/songs", {
+                method: "GET"
+            }).then(body => body.json()).then(data => {
+                for (let song of data) {
+                    songs = []
+                    songs.push({ id: song.id, name: song.name, damage: song.damage})
+                }
+                let newChildren = []
+                for (let song of songs) {
+                    let option = document.createElement("option")
+                    option.value = song.id
+                    option.innerHTML = song.name
+                    newChildren.push(option)
+                }
+                songSelector.replaceChildren(...newChildren)
+                update_song_damage()
+            })
+        }
+
+        function update_song_damage() {
+            let songId = Number(document.querySelector("#song-select").value)
+            let song = songs.find(s => s.id === songId)
+            document.querySelector("#song-damage").innerHTML = song.damage
         }
     </script>
 </head>
@@ -319,24 +343,24 @@
                     </div>
                 </div>
 
-<#--                <div class="user-block" style="background: white">-->
-<#--                    <div>-->
-<#--                        <label for="song-select">Select song:</label>-->
-<#--                        <select name="song-select" id="song-select">-->
-<#--                            <#list songs as song>-->
-<#--                                <option value="${song.id}">${song.name}</option>-->
-<#--                            </#list>-->
-<#--                        </select>-->
-<#--                        <#if songs?size gt 0>-->
-<#--                            <div>Damage: <span id="song-damage">${songs[0].damage}</span></div>-->
-<#--                        </#if>-->
-<#--                    </div>-->
-<#--                </div>-->
+                <div class="user-block" style="background: white">
+                    <div>
+                        <label for="song-select">Select song:</label>
+                        <select name="song-select" id="song-select" onchange="update_song_damage()">
+                            <#list songs as song>
+                                <option value="${song.id}">${song.name}</option>
+                            </#list>
+                        </select>
+                        <#if songs?size gt 0>
+                            <div>Damage: <span id="song-damage">${songs[0].damage}</span></div>
+                        </#if>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div style="display: flex; justify-content: center">
-        <button type="button">Begin</button>
+        <button type="button">Ready</button>
         <button type="button" onclick="leaveLobby('${lobbyId}')" >Leave</button>
     </div>
 </body>
