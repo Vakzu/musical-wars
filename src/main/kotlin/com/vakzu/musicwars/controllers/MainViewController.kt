@@ -154,7 +154,7 @@ class MainViewController(
         lobby.locationId = locationId
         if (lobby.isEveryoneReady()) {
             val moves =  fightService.playFight(lobby)
-            val fightMoves = moves.map { FightMoveResponse(it.id.moveNumber, it.id.fightId, it.attackerId, it.victimId, it.damage) }
+            val fightMoves = moves.map { FightMoveResponse(it.moveNumber, it.fightId, it.attackerId, it.victimId, it.damage) }
             messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", fightMoves)
             return ResponseEntity<Void>(HttpStatus.OK)
         }

@@ -317,7 +317,8 @@
         }
 
         function beginFight() {
-            fetch("/war/${lobbyId}/start", {
+            let locationId = 1
+            fetch("/war/${lobbyId}/start?locationId=" + locationId, {
                 method: "POST"
             }).then(res => {
                 if (res.status === 400) {

@@ -16,4 +16,6 @@ class FightService(private val fightMoveRepository: FightMoveRepository) {
         return fightMoveRepository.playFight(characterIds, effectIds, songIds, locationId)
     }
 
+
+
 }

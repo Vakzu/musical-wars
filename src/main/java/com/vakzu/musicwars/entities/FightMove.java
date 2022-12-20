@@ -1,26 +1,33 @@
 package com.vakzu.musicwars.entities;
 
 import javax.persistence.*;
+import java.util.Collection;
 
-@Entity
-@Table(name = "fight_moves")
 public class FightMove {
-    @EmbeddedId
-    private FightMoveId id;
+    private Integer fightId;
+
+    private Integer moveNumber;
 
     private Integer attackerId;
 
     private Integer victimId;
 
-    @Column(name = "damage", nullable = false)
     private Integer damage;
 
-    public FightMoveId getId() {
-        return id;
+    public Integer getFightId() {
+        return fightId;
     }
 
-    public void setId(FightMoveId id) {
-        this.id = id;
+    public void setFightId(Integer fightId) {
+        this.fightId = fightId;
+    }
+
+    public Integer getMoveNumber() {
+        return moveNumber;
+    }
+
+    public void setMoveNumber(Integer moveNumber) {
+        this.moveNumber = moveNumber;
     }
 
     public Integer getAttackerId() {
