@@ -1,6 +1,7 @@
 package com.vakzu.musicwars.controllers
 
 import com.vakzu.musicwars.dto.FightMoveResponse
+import com.vakzu.musicwars.dto.LobbyUserDto
 import com.vakzu.musicwars.dto.websocket.CommandType
 import com.vakzu.musicwars.dto.websocket.OnlineMessage
 import com.vakzu.musicwars.dto.websocket.ReadyResponse
@@ -80,5 +81,17 @@ class LobbyController(
             return ResponseEntity<Void>(HttpStatus.OK)
         }
         return ResponseEntity<Void>(HttpStatus.BAD_REQUEST)
+    }
+
+    @GetMapping("/users")
+    fun getLobbyUsers(@RequestParam("lobbyId") lobbyId: String): List<LobbyUserDto> {
+        val lobby = lobbyService.getLobby(lobbyId)
+        return lobby.participants.map { LobbyUserDto(it.key, it.value.username, it.value.ready) }
+    }
+
+    @GetMapping("/status")
+    fun getLobbyStatus(@RequestParam("lobbyId") lobbyId: String): Int {
+        val lobby = lobbyService.getLobby(lobbyId)
+        return lobby.hostId
     }
 }

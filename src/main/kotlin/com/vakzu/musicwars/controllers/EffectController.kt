@@ -32,9 +32,9 @@ class EffectController(val effectRepository: EffectRepository) {
         return AllEffectResponse(res)
     }
 
-    @PostMapping("/effect/buy")
+    @PostMapping("/buy")
     @ResponseBody
-    fun buyEffect(@RequestParam("effect_id") effectId: Int, principal: Principal): ResponseEntity<*> {
+    fun buyEffect(@RequestParam("effectId") effectId: Int, principal: Principal): ResponseEntity<*> {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
         val result = effectRepository.buyEffect(user.id, effectId)
         return ResponseEntity<Void>(if (result) HttpStatus.OK else HttpStatus.BAD_REQUEST)

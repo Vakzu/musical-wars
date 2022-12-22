@@ -1,6 +1,7 @@
 package com.vakzu.musicwars.controllers
 
 import com.vakzu.musicwars.dto.LoginDto
+import com.vakzu.musicwars.dto.OnlineUserDto
 import com.vakzu.musicwars.dto.RegisterRequest
 import com.vakzu.musicwars.security.MyUserPrincipal
 import com.vakzu.musicwars.security.UserService
@@ -23,6 +24,11 @@ class AuthController(val userService: UserService) {
     fun getUserBalance(principal: Principal): Int {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
         return user.balance
+    }
+
+    @GetMapping("/user/online")
+    fun getOnlineUsers(principal: Principal): List<OnlineUserDto> {
+        return userService.getOnlineUsers().map { OnlineUserDto(it.id, it.name) }
     }
 
 }
