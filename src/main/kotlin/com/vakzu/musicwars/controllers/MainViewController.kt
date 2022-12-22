@@ -42,19 +42,6 @@ class MainViewController(
         return "main"
     }
 
-
-    @GetMapping("/register")
-    fun registerPage(): String = "register"
-
-    @PostMapping("/register")
-    fun registerUser(@ModelAttribute("userForm") form: RegisterRequest, model: Model): String {
-        userService.registerUser(form.username, form.password)
-        return "redirect:/login"
-    }
-
-    @GetMapping("/login")
-    fun loginPage(): String = "login"
-
     @GetMapping("/war/{lobbyId}")
     fun getMaster(model: Model, @PathVariable lobbyId: String, principal: Principal): String {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
