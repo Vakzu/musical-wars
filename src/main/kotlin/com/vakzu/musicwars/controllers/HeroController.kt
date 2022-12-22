@@ -15,6 +15,7 @@ import java.security.Principal
 class HeroController(val userService: UserService) {
 
     @GetMapping("/all")
+    @ResponseBody
     fun getAllHeroes(principal: Principal): AllHeroResponse {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
         val heroes = userService.getShopUserInfo(user.id)
@@ -23,7 +24,7 @@ class HeroController(val userService: UserService) {
     }
 
     @PostMapping("/buy")
-    fun buyHero(@RequestParam("hero_id") heroId: Int, principal: Principal): ResponseEntity<*> {
+    fun buyHero(@RequestParam("heroId") heroId: Int, principal: Principal): ResponseEntity<*> {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
         val result = userService.buyHero(user.id, heroId)
         return ResponseEntity<Void>(if (result) HttpStatus.OK else HttpStatus.BAD_REQUEST)

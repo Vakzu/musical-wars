@@ -1,13 +1,11 @@
 package com.vakzu.musicwars.controllers
 
 import com.vakzu.musicwars.dto.FightMoveResponse
-import com.vakzu.musicwars.dto.SongDto
 import com.vakzu.musicwars.dto.websocket.CommandType
 import com.vakzu.musicwars.dto.websocket.OnlineMessage
 import com.vakzu.musicwars.dto.websocket.ReadyResponse
 import com.vakzu.musicwars.dto.websocket.SetReadyRequest
 import com.vakzu.musicwars.lobby.LobbyService
-import com.vakzu.musicwars.repos.SongRepository
 import com.vakzu.musicwars.security.MyUserPrincipal
 import com.vakzu.musicwars.services.FightService
 import org.springframework.http.HttpStatus
@@ -22,18 +20,17 @@ import java.security.Principal
 class LobbyController(
     val lobbyService: LobbyService,
     val messagingTemplate: SimpMessagingTemplate,
-    val fightService: FightService,
-    val songRepository: SongRepository
+    val fightService: FightService
 ) {
 
-    @PostMapping("/lobby/create")
+    @PostMapping("/create")
     fun createLobby(principal: Principal): String {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
         val uuid = lobbyService.createLobby(user)
         return uuid
     }
 
-    @PostMapping("/lobby/join")
+    @PostMapping("/join")
     fun acceptInvite(@RequestParam("lobbyId") lobbyId: String, principal: Principal) {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
         val lobby = lobbyService.getLobby(lobbyId)
@@ -42,7 +39,7 @@ class LobbyController(
         messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", OnlineMessage(CommandType.JOIN, user.id, user.name))
     }
 
-    @PostMapping("/lobby/leave")
+    @PostMapping("/leave")
     fun leaveLobby(@RequestParam("lobbyId") lobbyId: String, principal: Principal) {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
         val lobby = lobbyService.getLobby(lobbyId)
@@ -54,7 +51,7 @@ class LobbyController(
         messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", OnlineMessage(CommandType.LEAVE, user.id, user.name))
     }
 
-    @PostMapping("/lobby/ready/set")
+    @PostMapping("/ready/set")
     @ResponseBody
     fun setReady(@RequestParam("lobbyId") lobbyId: String, @RequestBody(required = true) readyRequest: SetReadyRequest, principal: Principal) {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
@@ -63,7 +60,7 @@ class LobbyController(
         messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", ReadyResponse(CommandType.SET_READY, user.id))
     }
 
-    @PostMapping("/lobby/ready/cancel")
+    @PostMapping("/ready/cancel")
     @ResponseBody
     fun cancelReady(@RequestParam("lobbyId") lobbyId: String, principal: Principal) {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
@@ -72,7 +69,7 @@ class LobbyController(
         messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", ReadyResponse(CommandType.CANCEL_READY, user.id))
     }
 
-    @PostMapping("/war/start")
+    @PostMapping("/start")
     fun beginFight(@RequestParam("lobbyId") lobbyId: String, @RequestParam locationId: Int): ResponseEntity<*> {
         val lobby = lobbyService.getLobby(lobbyId)
         lobby.locationId = locationId
@@ -83,11 +80,5 @@ class LobbyController(
             return ResponseEntity<Void>(HttpStatus.OK)
         }
         return ResponseEntity<Void>(HttpStatus.BAD_REQUEST)
-    }
-
-    @GetMapping("/character/songs")
-    fun getAvailableSongs(@RequestParam("characterId") characterId: Int): List<SongDto> {
-        val songs = songRepository.getCharacterAvailableSongs(characterId)
-        return songs.map { SongDto(it.id, it.name, it.damage) }
     }
 }
