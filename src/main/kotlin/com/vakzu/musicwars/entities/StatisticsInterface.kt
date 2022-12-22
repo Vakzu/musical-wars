@@ -1,6 +1,6 @@
-package com.vakzu.musicwars.dto
+package com.vakzu.musicwars.entities
 
-interface StatisticsDTO {
+interface StatisticsInterface {
     fun getGamesCount(): Int
     fun getWinsCount(): Int
     fun getAveragePlace(): Double

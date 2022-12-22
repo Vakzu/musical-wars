@@ -1,6 +1,6 @@
 package com.vakzu.musicwars.repos
 
-import com.vakzu.musicwars.dto.StatisticsDTO
+import com.vakzu.musicwars.entities.StatisticsInterface
 import com.vakzu.musicwars.entities.User
 import com.vakzu.musicwars.lobby.HeroShopInfo
 import org.springframework.data.jpa.repository.JpaRepository
@@ -30,5 +30,5 @@ interface UserRepository: JpaRepository<User, Long>  {
     fun buyHero(userId: Int, heroId: Int): Boolean
 
     @Query(nativeQuery = true, value = "SELECT * FROM get_statistics(?1)")
-    fun getUserStatistics(userId: Int): StatisticsDTO
+    fun getUserStatistics(userId: Int): StatisticsInterface
 }

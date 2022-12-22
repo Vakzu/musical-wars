@@ -135,17 +135,6 @@ class MainViewController(
         return ResponseEntity<Void>(HttpStatus.BAD_REQUEST)
     }
 
-    @GetMapping("/statistics")
-    fun getStatistics(principal: Principal, model: Model): String {
-        val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
-        val statistics = userService.getUserStatistics(user.id)
-        val root = HashMap<String, Any>()
-        root["user"] = user
-        root["statistics"] = statistics
-        model.addAllAttributes(root)
-        return "statistics"
-    }
-
     @GetMapping("/characters/{characterId}/songs")
     @ResponseBody
     fun getAvailableSongs(@PathVariable characterId: Int): List<SongDto> {
