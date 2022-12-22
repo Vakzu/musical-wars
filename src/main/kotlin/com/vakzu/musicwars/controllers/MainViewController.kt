@@ -103,14 +103,6 @@ class MainViewController(
         return "redirect:/"
     }
 
-    @PostMapping("/buy/effect")
-    @ResponseBody
-    fun buyEffect(@RequestParam("effect_id") effectId: Int, principal: Principal): ResponseEntity<*> {
-        val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
-        val result = effectRepository.buyEffect(user.id, effectId)
-        return ResponseEntity<Void>(if (result) HttpStatus.OK else HttpStatus.BAD_REQUEST)
-    }
-
     @PostMapping("/war/{lobbyId}/ready/set")
     @ResponseBody
     fun setReady(@PathVariable lobbyId: String, @RequestBody(required = true) readyRequest: SetReadyRequest, principal: Principal) {
