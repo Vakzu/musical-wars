@@ -1,6 +1,6 @@
 package com.vakzu.musicwars.lobby
 
-import com.vakzu.musicwars.dto.SetReadyRequest
+import com.vakzu.musicwars.dto.websocket.SetReadyRequest
 import com.vakzu.musicwars.entities.User
 
 class Lobby(val lobbyId: String, var hostId: Int) {

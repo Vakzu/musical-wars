@@ -2,6 +2,9 @@ package com.vakzu.musicwars.controllers
 
 import com.vakzu.musicwars.dto.*
 import com.vakzu.musicwars.dto.websocket.CommandType
+import com.vakzu.musicwars.dto.websocket.OnlineMessage
+import com.vakzu.musicwars.dto.websocket.ReadyResponse
+import com.vakzu.musicwars.dto.websocket.SetReadyRequest
 import com.vakzu.musicwars.lobby.LobbyService
 import com.vakzu.musicwars.repos.CharacterRepository
 import com.vakzu.musicwars.repos.EffectRepository
@@ -98,14 +101,6 @@ class MainViewController(
         messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", OnlineMessage(CommandType.LEAVE, user.id, user.name))
 
         return "redirect:/"
-    }
-
-    @PostMapping("/buy/hero")
-    @ResponseBody
-    fun buyHero(@RequestParam("hero_id") heroId: Int, principal: Principal): ResponseEntity<*> {
-        val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
-        val result = userService.buyHero(user.id, heroId)
-        return ResponseEntity<Void>(if (result) HttpStatus.OK else HttpStatus.BAD_REQUEST)
     }
 
     @PostMapping("/buy/effect")
