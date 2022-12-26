@@ -40,4 +40,22 @@ class EffectController(val effectRepository: EffectRepository) {
         return ResponseEntity<Void>(if (result) HttpStatus.OK else HttpStatus.BAD_REQUEST)
     }
 
+    @GetMapping("/user")
+    fun getUserInventory(principal: Principal): AllEffectResponse {
+        val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
+        val inventory = effectRepository.findEffectsByUserId(user.id)
+        val result = inventory.map {
+            EffectDto(
+                it.id,
+                it.name,
+                it.price,
+                it.stamina,
+                it.strength,
+                it.luck,
+                it.constitution
+            )
+        }
+        return AllEffectResponse(result)
+    }
+
 }

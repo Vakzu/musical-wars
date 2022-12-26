@@ -10,7 +10,7 @@ interface EffectRepository: JpaRepository<Effect, Long> {
     fun findEffectShopInfoByUserId(userId: Int): List<EffectShopInfo>
 
     @Query(nativeQuery = true, value = "SELECT * FROM get_available_effects_for_user(?1)")
-    fun findEffectByUserId(userId: Int): List<Effect>
+    fun findEffectsByUserId(userId: Int): List<Effect>
 
     @Query(nativeQuery = true, value = "SELECT * FROM buy_effect(?1, ?2)")
     fun buyEffect(userId: Int, effectId: Int): Boolean

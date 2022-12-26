@@ -40,7 +40,6 @@ class SecurityConfig {
             .and()
                 .logout()
                 .permitAll()
-                .logoutSuccessUrl("/login")
                 .deleteCookies("JSESSIONID")
 
         return http.build()
