@@ -37,7 +37,7 @@ class LobbyController(
         val lobby = lobbyService.getLobby(lobbyId)
         lobby.addParticipant(user)
 
-        messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", OnlineMessage(CommandType.JOIN, user.id, user.name))
+        messagingTemplate.convertAndSend("/topic/lobby/$lobbyId/changeMembers", OnlineMessage(CommandType.JOIN, user.id, user.name))
     }
 
     @PostMapping("/leave")
@@ -49,7 +49,7 @@ class LobbyController(
             lobbyService.lobbies.remove(lobby.lobbyId)
         }
 
-        messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", OnlineMessage(CommandType.LEAVE, user.id, user.name))
+        messagingTemplate.convertAndSend("/topic/lobby/$lobbyId/changeMembers", OnlineMessage(CommandType.LEAVE, user.id, user.name))
     }
 
     @PostMapping("/ready/set")
@@ -58,7 +58,7 @@ class LobbyController(
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
         val lobby = lobbyService.getLobby(lobbyId)
         lobby.setReady(user, readyRequest)
-        messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", ReadyResponse(CommandType.SET_READY, user.id))
+        messagingTemplate.convertAndSend("/topic/lobby/$lobbyId/changeReady", ReadyResponse(CommandType.SET_READY, user.id))
     }
 
     @PostMapping("/ready/cancel")
@@ -67,7 +67,7 @@ class LobbyController(
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
         val lobby = lobbyService.getLobby(lobbyId)
         lobby.cancelReady(user)
-        messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", ReadyResponse(CommandType.CANCEL_READY, user.id))
+        messagingTemplate.convertAndSend("/topic/lobby/$lobbyId/changeReady", ReadyResponse(CommandType.CANCEL_READY, user.id))
     }
 
     @PostMapping("/start")
@@ -77,7 +77,7 @@ class LobbyController(
         if (lobby.isEveryoneReady()) {
             val moves =  fightService.playFight(lobby)
             val fightMoves = moves.map { FightMoveResponse(it.moveNumber, it.fightId, it.attackerId, it.victimId, it.damage) }
-            messagingTemplate.convertAndSend("/topic/lobby/$lobbyId", fightMoves)
+            messagingTemplate.convertAndSend("/topic/lobby/$lobbyId/startFight", fightMoves)
             return ResponseEntity<Void>(HttpStatus.OK)
         }
         return ResponseEntity<Void>(HttpStatus.BAD_REQUEST)
