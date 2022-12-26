@@ -15,6 +15,7 @@ import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
+import org.springframework.web.cors.CorsConfiguration
 
 
 @Configuration
@@ -24,6 +25,9 @@ class SecurityConfig {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
+//            .cors().disable()
+            .cors().configurationSource { CorsConfiguration().applyPermitDefaultValues() }
+            .and()
             .csrf().disable()
             .authorizeRequests()
                 .antMatchers("/register").not().fullyAuthenticated()
@@ -48,6 +52,7 @@ class SecurityConfig {
     fun authenticationEntryPoint(): AuthenticationEntryPoint {
         return AuthenticationEntryPoint { _, response, _ ->
             response.status = 401
+            response.writer.write("Cannot authenticate user")
         }
     }
 
@@ -60,6 +65,8 @@ class SecurityConfig {
             val principal = SecurityContextHolder.getContext().authentication.principal
             val user = principal as MyUserPrincipal
             val json = objWriter.writeValueAsString(LoginDto(user.user.name, user.user.id))
+
+//            response.addHeader("Access-Control-Allow-Credentials" , "true")
             response.writer.write(json)
         }
     }

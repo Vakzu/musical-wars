@@ -27,8 +27,7 @@ class LobbyController(
     @PostMapping("/create")
     fun createLobby(principal: Principal): String {
         val user = ((principal as UsernamePasswordAuthenticationToken).principal as MyUserPrincipal).user
-        val uuid = lobbyService.createLobby(user)
-        return uuid
+        return lobbyService.createLobby(user)
     }
 
     @PostMapping("/join")
