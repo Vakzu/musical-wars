@@ -20,17 +20,22 @@ VALUES ('Wolfgang Amadeus Mozart', 300, 100, 'mozart.jpg'),
 
 
 INSERT INTO "song" ("name", "experience_level", "hero_id", "damage")
-VALUES ('Ballade No. 1 in G minor Op. 23', 100, 5, 45),
-       ('Moon Sonata', 76, 2, 38),
+VALUES ('Requiem', 83, 1, 46),
+       ('Turkish march', 0, 1, 32),
+       ('The Creatures of Prometheus', 76, 2, 41),
+       ('Moon Sonata', 0, 2, 36),
+       ('Messa si minor', 0, 3, 34),
        ('Toccata and Fugue', 96, 3, 39),
-       ('Requiem', 83, 1, 18),
+       ('Nutcracker', 0, 4, 35),
        ('Swan Lake', 65, 4, 40),
+       ('Fantasie impromptu', 0, 5, 37),
+       ('Ballade No. 1 in G minor Op. 23', 100, 5, 45),
        ('Dorafool', 0, 6, 41),
-       ('Fell In Love', 0, 6, 43),
+       ('Fell In Love', 1, 6, 43),
        ('Pink hair', 10, 6, 43),
        ('Different', 0, 7, 38),
-       ('Dead man"ns bones', 0, 8, 35),
        ('Say what you like', 0, 7, 26),
+       ('Dead man"ns bones', 0, 8, 35),
        ('Never say goodbye', 0, 8, 42);
 
 INSERT INTO "effect" ("name", "price", "stamina", "strength", "luck", "constitution")
