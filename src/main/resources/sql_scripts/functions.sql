@@ -149,12 +149,11 @@ $$DECLARE
     WHERE u.id = userId
       AND fight_participant.position = 1;
 
-    SELECT COUNT(*) INTO lastGameDate FROM fight_participant
+    SELECT f.start_time INTO lastGameDate FROM fight_participant
                              JOIN character c on fight_participant.character_id = c.id
                              JOIN "user" u on c.user_id = u.id
                              JOIN fight f on fight_participant.fight_id = f.id
     WHERE u.id = userId
-      AND f.start_time
     LIMIT 1;
 
 --     RETURN NEXT (games_count, wins_count, average_price, last_game_date);

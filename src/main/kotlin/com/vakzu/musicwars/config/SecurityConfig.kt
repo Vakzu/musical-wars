@@ -1,9 +1,8 @@
 package com.vakzu.musicwars.config
 
-//import com.vakzu.musicwars.security.JwtFilter
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.vakzu.musicwars.dto.LoginDto
+import com.vakzu.musicwars.security.CorsFilter
 import com.vakzu.musicwars.security.MyUserPrincipal
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,19 +14,18 @@ import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
-import org.springframework.web.cors.CorsConfiguration
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(
+    val corsFilter: CorsFilter
+) {
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-//            .cors().disable()
-            .cors().configurationSource { CorsConfiguration().applyPermitDefaultValues() }
-            .and()
             .csrf().disable()
             .authorizeRequests()
                 .antMatchers("/register").not().fullyAuthenticated()
@@ -45,6 +43,8 @@ class SecurityConfig {
                 .logout()
                 .permitAll()
                 .deleteCookies("JSESSIONID")
+            .and()
+            .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }
@@ -66,7 +66,6 @@ class SecurityConfig {
             val user = principal as MyUserPrincipal
             val json = objWriter.writeValueAsString(LoginDto(user.user.name, user.user.id))
 
-//            response.addHeader("Access-Control-Allow-Credentials" , "true")
             response.writer.write(json)
         }
     }
