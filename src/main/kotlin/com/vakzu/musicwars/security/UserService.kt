@@ -1,7 +1,6 @@
 package com.vakzu.musicwars.security
 
 import com.vakzu.musicwars.entities.User
-import com.vakzu.musicwars.exceptions.NotEnoughMoneyException
 import com.vakzu.musicwars.exceptions.UserAlreadyExistsException
 import com.vakzu.musicwars.repos.UserRepository
 import org.springframework.security.core.userdetails.UserDetails
@@ -16,18 +15,20 @@ class UserService(
     private val passwordEncoder: BCryptPasswordEncoder
 ): UserDetailsService {
 
-    fun registerUser(username: String, password: String) {
+    fun registerUser(username: String, password: String): Int {
         val existing = userRepository.findByName(username)
         if (existing != null) {
             throw UserAlreadyExistsException(existing.name)
         }
 
-        val user = User()
+        var user = User()
         user.name = username
         user.password = passwordEncoder.encode(password)
         user.isOnline = true
 
-        userRepository.save(user)
+        user = userRepository.save(user)
+
+        return user.id
     }
 
     fun getOnlineUsers(): List<User> {
@@ -47,4 +48,6 @@ class UserService(
     }
 
     fun findByName(username: String): User? = userRepository.findByName(username)
+
+    fun getUserStatistics(userId: Int) = userRepository.getUserStatistics(userId)
 }

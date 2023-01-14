@@ -13,6 +13,8 @@ class WebSocketConfig: WebSocketMessageBrokerConfigurer {
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         registry.addEndpoint("/game")
             .setHandshakeHandler(UserHandshakeHandler())
+            .setAllowedOrigins("http://localhost:3000")
+            .withSockJS()
     }
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {

@@ -1,19 +1,26 @@
 package com.vakzu.musicwars.config
 
-//import com.vakzu.musicwars.security.JwtFilter
-
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.vakzu.musicwars.dto.LoginDto
+import com.vakzu.musicwars.security.CorsFilter
+import com.vakzu.musicwars.security.MyUserPrincipal
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-//    val jwtFilter: JwtFilter
+    val corsFilter: CorsFilter
 ) {
 
     @Bean
@@ -21,39 +28,53 @@ class SecurityConfig(
         http
             .csrf().disable()
             .authorizeRequests()
-            .antMatchers("/register").not().fullyAuthenticated()
-//            .antMatchers("/war/**", "/game", "/").authenticated()
-            .antMatchers("/resources/**").permitAll()
-            .anyRequest().authenticated()
+                .antMatchers("/register").not().fullyAuthenticated()
+                .antMatchers("/resources/**").permitAll()
+                .anyRequest().authenticated()
             .and()
-            .formLogin()
-            .loginPage("/login")
-            .defaultSuccessUrl("/")
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint())
             .and()
-            .logout()
-            .permitAll()
-            .logoutSuccessUrl("/login")
-            .deleteCookies("JSESSIONID")
+                .formLogin()
+                .loginProcessingUrl("/login")
+                .successHandler(successHandler())
+                .failureHandler(failureHandler())
+            .and()
+                .logout()
+                .permitAll()
+                .deleteCookies("JSESSIONID")
+            .and()
+            .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }
 
-//    @Bean
-//    fun userDetailsService(): InMemoryUserDetailsManager? {
-//        val user1: UserDetails = User.withUsername("user1")
-//            .password(passwordEncoder().encode("user1Pass"))
-//            .roles("USER")
-//            .build()
-//        val user2: UserDetails = User.withUsername("user2")
-//            .password(passwordEncoder().encode("user2Pass"))
-//            .roles("USER")
-//            .build()
-//        val admin: UserDetails = User.withUsername("admin")
-//            .password(passwordEncoder().encode("adminPass"))
-//            .roles("ADMIN")
-//            .build()
-//        return InMemoryUserDetailsManager(user1, user2, admin)
-//    }
+    fun authenticationEntryPoint(): AuthenticationEntryPoint {
+        return AuthenticationEntryPoint { _, response, _ ->
+            response.status = 401
+            response.writer.write("Cannot authenticate user")
+        }
+    }
+
+    fun successHandler(): AuthenticationSuccessHandler {
+        return AuthenticationSuccessHandler { _, response, _ ->
+            response.status = 200
+            response.addHeader("Content-Type", "application/json")
+            val objWriter = ObjectMapper().writer()
+
+            val principal = SecurityContextHolder.getContext().authentication.principal
+            val user = principal as MyUserPrincipal
+            val json = objWriter.writeValueAsString(LoginDto(user.user.name, user.user.id))
+
+            response.writer.write(json)
+        }
+    }
+
+    fun failureHandler(): AuthenticationFailureHandler {
+        return AuthenticationFailureHandler { _, response, _ ->
+            response.status = 401
+        }
+    }
 
     @Bean
     fun passwordEncoder(): BCryptPasswordEncoder {

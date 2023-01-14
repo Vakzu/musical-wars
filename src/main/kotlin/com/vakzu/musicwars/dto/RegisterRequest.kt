@@ -1,3 +1,3 @@
 package com.vakzu.musicwars.dto
 
-class RegisterRequest(val username: String, val password: String, val confirmPassword: String)
+class RegisterRequest(val username: String, val password: String)

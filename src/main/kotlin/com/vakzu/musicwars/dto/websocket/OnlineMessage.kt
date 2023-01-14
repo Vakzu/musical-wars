@@ -1,5 +1,3 @@
-package com.vakzu.musicwars
-
-import com.vakzu.musicwars.dto.websocket.CommandType
+package com.vakzu.musicwars.dto.websocket
 
 class OnlineMessage(val type: CommandType, val userId: Int, val username: String)
